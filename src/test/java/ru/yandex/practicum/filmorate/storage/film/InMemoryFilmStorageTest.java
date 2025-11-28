@@ -137,8 +137,8 @@ class InMemoryFilmStorageTest {
         Film createdFilm = filmStorage.create(originalFilm);
 
         // Then
-        assertEquals(1, originalFilm.getId()); // Исходный объект не должен измениться
-        assertTrue(createdFilm.getId() > 0);   // Созданный объект имеет ID
+        assertEquals(1, originalFilm.getId());
+        assertTrue(createdFilm.getId() > 0);
     }
 
     @Test
@@ -158,6 +158,6 @@ class InMemoryFilmStorageTest {
         Film retrievedFilm2 = filmStorage.getById(createdFilm2.getId());
 
         assertEquals("Updated Film 1", retrievedFilm1.getName());
-        assertEquals("Film 2", retrievedFilm2.getName()); // Второй фильм не изменился
+        assertEquals("Film 2", retrievedFilm2.getName());
     }
 }

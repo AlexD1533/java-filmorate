@@ -22,7 +22,6 @@ public class FilmService {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
-    // Добавление лайка фильму
     public void addLike(int filmId, int userId) {
         validateFilmExists(filmId);
 
@@ -34,11 +33,9 @@ public class FilmService {
             throw new NotFoundException("Пользователь " + userId + " не существует и не может поставить лайк фильму" + filmId);
         }
 
-
         filmLikes.add(userId);
     }
 
-    // Удаление лайка с фильма
     public void removeLike(int filmId, int userId) {
         validateFilmExists(filmId);
 
@@ -51,13 +48,11 @@ public class FilmService {
         }
     }
 
-    // Получение количества лайков у фильма
     public int getLikesCount(int filmId) {
         validateFilmExists(filmId);
         return likes.getOrDefault(filmId, Collections.emptySet()).size();
     }
 
-    // Получение топ-N самых популярных фильмов по лайкам
     public List<Film> getPopularFilms(int count) {
         if (count <= 0) {
             count = 10;

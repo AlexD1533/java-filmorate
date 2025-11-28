@@ -26,7 +26,7 @@ class UserServiceTest {
         userStorage = new InMemoryUserStorage();
         userService = new UserService(userStorage);
 
-        // Создаем тестовых пользователей
+
         user1 = new User(0, "user1@email.com", "user1", "User One",
                 LocalDate.of(1990, 1, 1));
         user2 = new User(0, "user2@email.com", "user2", "User Two",
@@ -44,10 +44,10 @@ class UserServiceTest {
 
     @Test
     void addFriend_ShouldAddMutualFriendship() {
-        // When
+
         userService.addFriend(user1.getId(), user2.getId());
 
-        // Then
+
         List<User> user1Friends = userService.getFriends(user1.getId());
         List<User> user2Friends = userService.getFriends(user2.getId());
 
@@ -59,58 +59,56 @@ class UserServiceTest {
 
     @Test
     void addFriend_ShouldThrowExceptionWhenUserNotFound() {
-        // When & Then
+
         assertThrows(NotFoundException.class, () -> userService.addFriend(999, user1.getId()));
     }
 
     @Test
     void addFriend_ShouldThrowExceptionWhenFriendNotFound() {
-        // When & Then
+
         assertThrows(NotFoundException.class, () -> userService.addFriend(user1.getId(), 999));
     }
 
     @Test
     void removeFriend_ShouldRemoveMutualFriendship() {
-        // Given
+
         userService.addFriend(user1.getId(), user2.getId());
         assertEquals(1, userService.getFriends(user1.getId()).size());
 
-        // When
         userService.removeFriend(user1.getId(), user2.getId());
 
-        // Then
         assertEquals(0, userService.getFriends(user1.getId()).size());
         assertEquals(0, userService.getFriends(user2.getId()).size());
     }
 
     @Test
     void removeFriend_ShouldDoNothingWhenFriendshipNotExists() {
-        // When
+
         userService.removeFriend(user1.getId(), user2.getId());
 
-        // Then - No exception should be thrown
+
         assertEquals(0, userService.getFriends(user1.getId()).size());
     }
 
     @Test
     void getFriends_ShouldReturnEmptyListWhenNoFriends() {
-        // When
+
         List<User> friends = userService.getFriends(user1.getId());
 
-        // Then
+
         assertTrue(friends.isEmpty());
     }
 
     @Test
     void getFriends_ShouldReturnAllFriends() {
-        // Given
+
         userService.addFriend(user1.getId(), user2.getId());
         userService.addFriend(user1.getId(), user3.getId());
 
-        // When
+
         List<User> friends = userService.getFriends(user1.getId());
 
-        // Then
+
         assertEquals(2, friends.size());
         assertTrue(friends.stream().anyMatch(u -> u.getId() == user2.getId()));
         assertTrue(friends.stream().anyMatch(u -> u.getId() == user3.getId()));
@@ -118,29 +116,26 @@ class UserServiceTest {
 
     @Test
     void getCommonFriends_ShouldReturnCommonFriends() {
-        // Given
+
         userService.addFriend(user1.getId(), user2.getId());
         userService.addFriend(user1.getId(), user3.getId());
         userService.addFriend(user2.getId(), user3.getId());
 
-        // When
+
         List<User> commonFriends = userService.getCommonFriends(user1.getId(), user2.getId());
 
-        // Then
         assertEquals(1, commonFriends.size());
         assertEquals(user3.getId(), commonFriends.get(0).getId());
     }
 
     @Test
     void getCommonFriends_ShouldReturnEmptyListWhenNoCommonFriends() {
-        // Given
+
         userService.addFriend(user1.getId(), user2.getId());
         userService.addFriend(user3.getId(), user4.getId());
 
-        // When
         List<User> commonFriends = userService.getCommonFriends(user1.getId(), user3.getId());
 
-        // Then
         assertTrue(commonFriends.isEmpty());
     }
 
@@ -152,34 +147,34 @@ class UserServiceTest {
 
     @Test
     void getCommonFriends_ShouldThrowExceptionWhenOtherUserNotFound() {
-        // When & Then
+
         assertThrows(NotFoundException.class, () -> userService.getCommonFriends(user1.getId(), 999));
     }
 
     @Test
     void addFriend_ShouldWorkWithMultipleFriends() {
-        // Given
+
         userService.addFriend(user1.getId(), user2.getId());
         userService.addFriend(user1.getId(), user3.getId());
 
-        // When
+
         List<User> friends = userService.getFriends(user1.getId());
 
-        // Then
+
         assertEquals(2, friends.size());
     }
 
     @Test
     void removeFriend_ShouldWorkWhenOnlyOneFriendRemains() {
-        // Given
+
         userService.addFriend(user1.getId(), user2.getId());
         userService.addFriend(user1.getId(), user3.getId());
         assertEquals(2, userService.getFriends(user1.getId()).size());
 
-        // When
+
         userService.removeFriend(user1.getId(), user2.getId());
 
-        // Then
+
         List<User> friends = userService.getFriends(user1.getId());
         assertEquals(1, friends.size());
         assertEquals(user3.getId(), friends.get(0).getId());

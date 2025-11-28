@@ -19,7 +19,6 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    // Добавление в друзья
     public void addFriend(int userId, int friendId) {
         validateUserExists(userId);
         validateUserExists(friendId);
@@ -28,7 +27,6 @@ public class UserService {
         friends.computeIfAbsent(friendId, k -> new HashSet<>()).add(userId);
     }
 
-    // Удаление из друзей
     public void removeFriend(int userId, int friendId) {
         validateUserExists(userId);
         validateUserExists(friendId);
@@ -41,7 +39,6 @@ public class UserService {
         }
     }
 
-    // Получение списка друзей пользователя
     public List<User> getFriends(int userId) {
         validateUserExists(userId);
 
@@ -51,7 +48,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // Получение списка общих друзей
     public List<User> getCommonFriends(int userId, int otherUserId) {
         validateUserExists(userId);
         validateUserExists(otherUserId);
