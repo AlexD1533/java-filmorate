@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,10 +14,12 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final Map<Integer, Set<Integer>> likes = new HashMap<>();
+    private final InMemoryUserStorage inMemoryUserStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, InMemoryUserStorage inMemoryUserStorage) {
         this.filmStorage = filmStorage;
+        this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
     // Добавление лайка фильму
@@ -27,12 +30,21 @@ public class FilmService {
         if (filmLikes.contains(userId)) {
             throw new IllegalArgumentException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
         }
+        if (!inMemoryUserStorage.getUsersMap().containsKey(userId)) {
+            throw new NotFoundException("Пользователь " + userId + " не существует и не может поставить лайк фильму" + filmId);
+        }
+
+
         filmLikes.add(userId);
     }
 
     // Удаление лайка с фильма
     public void removeLike(int filmId, int userId) {
         validateFilmExists(filmId);
+
+        if (!inMemoryUserStorage.getUsersMap().containsKey(userId)) {
+            throw new NotFoundException("Пользователь " + userId + " не существует и не может поставить лайк фильму" + filmId);
+        }
 
         if (likes.containsKey(filmId)) {
             likes.get(filmId).remove(userId);
