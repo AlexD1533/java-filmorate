@@ -18,6 +18,7 @@ public class UserController {
     private final UserStorage userStorage;
     private final UserValidator validator;
     private final UserService userService;
+
     @PostMapping
     public User create(@RequestBody User user) {
         log.info("Пользователь: запрос на создание {}", user);
