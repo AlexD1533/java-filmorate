@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.validation;
 
-
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,12 +14,8 @@ class UserValidatorTest {
 
     @Test
     void shouldPassValidUser() {
-        User user = User.builder()
-                .email("user@mail.ru")
-                .login("user123")
-                .name("Display Name")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
+        User user = new User(0, "user@mail.ru", "user123", "Display Name",
+                LocalDate.of(1990, 1, 1));
 
         assertThatCode(() -> validator.validate(user))
                 .doesNotThrowAnyException();
@@ -28,12 +23,8 @@ class UserValidatorTest {
 
     @Test
     void shouldFailWhenEmailIsBlank() {
-        User user = User.builder()
-                .email(" ")
-                .login("user123")
-                .name("Name")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
+        User user = new User(0, " ", "user123", "Name",
+                LocalDate.of(1990, 1, 1));
 
         assertThatThrownBy(() -> validator.validate(user))
                 .isInstanceOf(ValidationException.class)
@@ -42,12 +33,8 @@ class UserValidatorTest {
 
     @Test
     void shouldFailWhenEmailHasNoAt() {
-        User user = User.builder()
-                .email("invalid.mail.ru")
-                .login("user123")
-                .name("Name")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
+        User user = new User(0, "invalid.mail.ru", "user123", "Name",
+                LocalDate.of(1990, 1, 1));
 
         assertThatThrownBy(() -> validator.validate(user))
                 .isInstanceOf(ValidationException.class)
@@ -56,12 +43,8 @@ class UserValidatorTest {
 
     @Test
     void shouldFailWhenLoginIsBlank() {
-        User user = User.builder()
-                .email("user@mail.ru")
-                .login(" ")
-                .name("Name")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
+        User user = new User(0, "user@mail.ru", " ", "Name",
+                LocalDate.of(1990, 1, 1));
 
         assertThatThrownBy(() -> validator.validate(user))
                 .isInstanceOf(ValidationException.class)
@@ -70,12 +53,8 @@ class UserValidatorTest {
 
     @Test
     void shouldFailWhenLoginHasSpace() {
-        User user = User.builder()
-                .email("user@mail.ru")
-                .login("user 123")
-                .name("Name")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
+        User user = new User(0, "user@mail.ru", "user 123", "Name",
+                LocalDate.of(1990, 1, 1));
 
         assertThatThrownBy(() -> validator.validate(user))
                 .isInstanceOf(ValidationException.class)
@@ -84,15 +63,37 @@ class UserValidatorTest {
 
     @Test
     void shouldFailWhenBirthdayIsInFuture() {
-        User user = User.builder()
-                .email("user@mail.ru")
-                .login("user123")
-                .name("Name")
-                .birthday(LocalDate.now().plusDays(1))
-                .build();
+        User user = new User(0, "user@mail.ru", "user123", "Name",
+                LocalDate.now().plusDays(1));
 
         assertThatThrownBy(() -> validator.validate(user))
                 .isInstanceOf(ValidationException.class)
                 .hasMessage("Дата рождения не может быть в будущем");
+    }
+
+    @Test
+    void shouldPassWhenNameIsNull() {
+        User user = new User(0, "user@mail.ru", "user123", null,
+                LocalDate.of(1990, 1, 1));
+
+        assertThatCode(() -> validator.validate(user))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldPassWhenBirthdayIsToday() {
+        User user = new User(0, "user@mail.ru", "user123", "Name",
+                LocalDate.now());
+
+        assertThatCode(() -> validator.validate(user))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldPassWhenBirthdayIsNull() {
+        User user = new User(0, "user@mail.ru", "user123", "Name", null);
+
+        assertThatCode(() -> validator.validate(user))
+                .doesNotThrowAnyException();
     }
 }
