@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validation.UserValidator;
 
 import java.util.*;
@@ -15,7 +14,6 @@ import java.util.*;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserStorage userStorage;
     private final UserValidator validator;
     private final UserService userService;
 
@@ -28,7 +26,7 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        User createdUser = userStorage.create(user);
+        User createdUser = userService.create(user);
         log.info("Пользователь создан с id={}", createdUser.getId());
         return createdUser;
     }
@@ -42,14 +40,14 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        User updatedUser = userStorage.update(user);
+        User updatedUser = userService.update(user);
         log.info("Пользователь обновлён {}", updatedUser);
         return updatedUser;
     }
 
     @GetMapping
     public Collection<User> getAll() {
-        Collection<User> users = userStorage.getAll();
+        Collection<User> users = userService.getAll();
         log.info("Пользователь: запрос на получение всех ({} шт.)", users.size());
         return users;
     }
@@ -57,7 +55,7 @@ public class UserController {
     @GetMapping("/{id}")
     public User getById(@PathVariable int id) {
         log.info("Пользователь: запрос на получение по id={}", id);
-        User user = userStorage.getById(id);
+        User user = userService.getById(id);
         log.info("Найден пользователь: {}", user);
         return user;
     }

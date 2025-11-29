@@ -12,6 +12,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int nextId = 1;
 
     @Override
+    public Map<Integer, Film> getFilmsMap() {
+        return Map.copyOf(films);
+    }
+
+    @Override
     public Film create(Film film) {
         film.setId(nextId++);
         films.put(film.getId(), film);

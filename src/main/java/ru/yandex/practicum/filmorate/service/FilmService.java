@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,12 +15,28 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final Map<Integer, Set<Integer>> likes = new HashMap<>();
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, InMemoryUserStorage inMemoryUserStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
-        this.inMemoryUserStorage = inMemoryUserStorage;
+        this.userStorage = userStorage;
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
+    }
+
+    public Collection<Film> getAll() {
+        return filmStorage.getAll();
+    }
+
+    public Film getById(int id) {
+        return filmStorage.getById(id);
     }
 
     public void addLike(int filmId, int userId) {
@@ -29,7 +46,7 @@ public class FilmService {
         if (filmLikes.contains(userId)) {
             throw new IllegalArgumentException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
         }
-        if (!inMemoryUserStorage.getUsersMap().containsKey(userId)) {
+        if (!userStorage.getUsersMap().containsKey(userId)) {
             throw new NotFoundException("Пользователь " + userId + " не существует и не может поставить лайк фильму" + filmId);
         }
 
@@ -39,7 +56,7 @@ public class FilmService {
     public void removeLike(int filmId, int userId) {
         validateFilmExists(filmId);
 
-        if (!inMemoryUserStorage.getUsersMap().containsKey(userId)) {
+        if (!userStorage.getUsersMap().containsKey(userId)) {
             throw new NotFoundException("Пользователь " + userId + " не существует и не может поставить лайк фильму" + filmId);
         }
 
@@ -69,7 +86,7 @@ public class FilmService {
     }
 
     private void validateFilmExists(int filmId) {
-        if (!filmStorage.getAll().stream().anyMatch(film -> film.getId() == filmId)) {
+        if (!filmStorage.getFilmsMap().containsKey(filmId)) {
             throw new NotFoundException("Фильм с id=" + filmId + " не найден");
         }
     }

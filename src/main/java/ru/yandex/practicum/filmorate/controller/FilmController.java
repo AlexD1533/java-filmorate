@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.validation.FilmValidator;
 
 import java.util.*;
@@ -14,13 +13,11 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmStorage filmStorage;
     private final FilmValidator validator;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController(FilmStorage filmStorage, FilmValidator validator, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmValidator validator, FilmService filmService) {
         this.validator = validator;
         this.filmService = filmService;
     }
@@ -29,7 +26,7 @@ public class FilmController {
     public Film create(@RequestBody Film film) {
         log.info("Фильм: запрос на создание {}", film);
         validator.validate(film);
-        Film createdFilm = filmStorage.create(film);
+        Film createdFilm = filmService.create(film);
         log.info("Фильм создан с id={}", createdFilm.getId());
         return createdFilm;
     }
@@ -38,14 +35,14 @@ public class FilmController {
     public Film update(@RequestBody Film film) {
         log.info("Фильм: запрос на обновление {}", film);
         validator.validate(film);
-        Film updatedFilm = filmStorage.update(film);
+        Film updatedFilm = filmService.update(film);
         log.info("Фильм обновлён {}", updatedFilm);
         return updatedFilm;
     }
 
     @GetMapping
     public Collection<Film> getAll() {
-        Collection<Film> films = filmStorage.getAll();
+        Collection<Film> films = filmService.getAll();
         log.info("Фильм: запрос на получение всех ({} шт.)", films.size());
         return films;
     }
@@ -53,7 +50,7 @@ public class FilmController {
     @GetMapping("/{id}")
     public Film getById(@PathVariable int id) {
         log.info("Фильм: запрос на получение по id={}", id);
-        Film film = filmStorage.getById(id);
+        Film film = filmService.getById(id);
         log.info("Найден фильм: {}", film);
         return film;
     }
