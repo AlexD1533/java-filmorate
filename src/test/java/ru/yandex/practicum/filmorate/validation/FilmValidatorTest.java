@@ -14,12 +14,8 @@ class FilmValidatorTest {
 
     @Test
     void shouldPassValidFilm() {
-        Film film = Film.builder()
-                .name("Valid Film")
-                .description("Short desc")
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(120)
-                .build();
+        Film film = new Film(0, "Valid Film", "Short desc",
+                LocalDate.of(2000, 1, 1), 120);
 
         assertThatCode(() -> validator.validate(film))
                 .doesNotThrowAnyException();
@@ -27,12 +23,8 @@ class FilmValidatorTest {
 
     @Test
     void shouldFailWhenNameIsBlank() {
-        Film film = Film.builder()
-                .name(" ")
-                .description("Desc")
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(120)
-                .build();
+        Film film = new Film(0, " ", "Desc",
+                LocalDate.of(2000, 1, 1), 120);
 
         assertThatThrownBy(() -> validator.validate(film))
                 .isInstanceOf(ValidationException.class)
@@ -41,12 +33,8 @@ class FilmValidatorTest {
 
     @Test
     void shouldFailWhenDescriptionIsTooLong() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("a".repeat(201))
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(120)
-                .build();
+        Film film = new Film(0, "Name", "a".repeat(201),
+                LocalDate.of(2000, 1, 1), 120);
 
         assertThatThrownBy(() -> validator.validate(film))
                 .isInstanceOf(ValidationException.class)
@@ -55,12 +43,8 @@ class FilmValidatorTest {
 
     @Test
     void shouldFailWhenReleaseDateIsTooEarly() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("Desc")
-                .releaseDate(LocalDate.of(1895, 12, 27))
-                .duration(120)
-                .build();
+        Film film = new Film(0, "Name", "Desc",
+                LocalDate.of(1895, 12, 27), 120);
 
         assertThatThrownBy(() -> validator.validate(film))
                 .isInstanceOf(ValidationException.class)
@@ -68,16 +52,49 @@ class FilmValidatorTest {
     }
 
     @Test
-    void shouldFailWhenDurationIsZeroOrNegative() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("Desc")
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(0)
-                .build();
+    void shouldFailWhenDurationIsZero() {
+        Film film = new Film(0, "Name", "Desc",
+                LocalDate.of(2000, 1, 1), 0);
 
         assertThatThrownBy(() -> validator.validate(film))
                 .isInstanceOf(ValidationException.class)
                 .hasMessage("Продолжительность фильма должна быть положительной");
+    }
+
+    @Test
+    void shouldFailWhenDurationIsNegative() {
+        Film film = new Film(0, "Name", "Desc",
+                LocalDate.of(2000, 1, 1), -10);
+
+        assertThatThrownBy(() -> validator.validate(film))
+                .isInstanceOf(ValidationException.class)
+                .hasMessage("Продолжительность фильма должна быть положительной");
+    }
+
+    @Test
+    void shouldPassWhenReleaseDateIsExactlyBoundary() {
+        Film film = new Film(0, "Name", "Desc",
+                LocalDate.of(1895, 12, 28), 120);
+
+        assertThatCode(() -> validator.validate(film))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldPassWhenDescriptionIsExactly200Characters() {
+        Film film = new Film(0, "Name", "a".repeat(200),
+                LocalDate.of(2000, 1, 1), 120);
+
+        assertThatCode(() -> validator.validate(film))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldPassWhenDurationIsPositive() {
+        Film film = new Film(0, "Name", "Desc",
+                LocalDate.of(2000, 1, 1), 1);
+
+        assertThatCode(() -> validator.validate(film))
+                .doesNotThrowAnyException();
     }
 }
