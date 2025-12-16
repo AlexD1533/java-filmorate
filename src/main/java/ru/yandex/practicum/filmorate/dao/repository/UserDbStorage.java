@@ -7,8 +7,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Collection;
 
 @Component("userDbStorage")
@@ -36,7 +34,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
                 user.getName(),
                 user.getEmail(),
                 user.getLogin(),
-                Timestamp.from(Instant.from(user.getBirthday()))
+               user.getBirthday()
         );
         user.setId(id);
         return user;
@@ -53,7 +51,6 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
         );
         return user;
     }
-
 
     @Override
     public User getById(int id) {

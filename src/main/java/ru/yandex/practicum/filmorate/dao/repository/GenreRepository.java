@@ -75,7 +75,7 @@ public class GenreRepository extends BaseRepository<Genre> {
     }
 
     // НОВЫЕ МЕТОДЫ для получения названий и количества
-    public Optional<String> findNameById(Integer id) {
+    public Optional<String> findNameById(Long id) {
         try {
             String name = jdbcTemplate.queryForObject(FIND_NAME_BY_ID_SQL, String.class, id);
             return Optional.ofNullable(name);
@@ -110,7 +110,7 @@ public class GenreRepository extends BaseRepository<Genre> {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Genre> findById(Integer id) {
+    public Optional<Genre> findById(Long id) {
         return findOne(FIND_BY_ID_SQL, id);
     }
 
