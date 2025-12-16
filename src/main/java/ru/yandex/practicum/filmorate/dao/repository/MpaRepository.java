@@ -5,19 +5,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.repository.mappers.MpaRowMapper;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-@
+
 public class MpaRepository extends BaseRepository<MpaRating> {
     private final JdbcTemplate jdbcTemplate;
 
     // SQL константы
-    private static final String FIND_ALL_SQL = "SELECT * FROM mpa_rating WHERE rating_id";
+    private static final String FIND_ALL_SQL = "SELECT * FROM mpa_rating";
     private static final String FIND_BY_FILM_ID_SQL = """
         SELECT r.* 
         FROM mpa_rating r
@@ -26,7 +25,7 @@ public class MpaRepository extends BaseRepository<MpaRating> {
         """;
     private static final String FIND_BY_NAME_SQL = "SELECT * FROM mpa_rating WHERE name = ?";
     private static final String COUNT_FILMS_BY_RATING_SQL = "SELECT COUNT(*) FROM films WHERE rating_id = ?";
-    private static final String FIND_BY_ID_SQL = "SELECT * FROM mpa_rating WHERE name = ?";
+    private static final String FIND_BY_ID_SQL = "SELECT * FROM mpa_rating WHERE id = ?";
 
     public Optional<MpaRating> findById(Long id) {
         return findOne(FIND_BY_ID_SQL, id);

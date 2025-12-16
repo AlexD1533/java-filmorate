@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class BaseRepository<T> {
+public abstract class BaseRepository<T> {
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
 
@@ -64,4 +65,7 @@ public class BaseRepository<T> {
         }
     }
 
+    protected boolean existsById(String query, Object... params) {
+        return jdbc.queryForObject(query, Boolean.class, params);
+    }
 }

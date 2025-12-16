@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao.dto;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.model.MpaDto;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

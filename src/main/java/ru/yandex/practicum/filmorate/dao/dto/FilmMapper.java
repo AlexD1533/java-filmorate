@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.dao.dto;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
+
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;

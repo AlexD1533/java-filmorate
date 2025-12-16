@@ -3,14 +3,20 @@ package ru.yandex.practicum.filmorate.dao.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 
 @Component("filmDbStorage")
 public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
+
+    private static final String FIND_EXIST_BY_NAME_DATE_QUERY = "SELECT * FROM films WHERE name = ? AND release_date = ?";
+    private static final String FIND_ID_EXIST = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE film_id = ?";
@@ -20,14 +26,13 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
     private static final String FIND_TOP_POPULAR_FILMS_SQL = """
             SELECT
-                f.film_id,
-                f.name,
+                f.*,
                 COUNT(l.user_id) AS likes_count
             FROM films f
             LEFT JOIN likes l ON f.film_id = l.film_id
             GROUP BY f.film_id, f.name
             ORDER BY COUNT(l.user_id) DESC, f.film_id
-            FETCH FIRST 10 ROWS ONLY""";
+            FETCH FIRST ? ROWS ONLY""";
 
 
 
@@ -69,10 +74,27 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
         return findMany(FIND_ALL_QUERY);
     }
 
+
+
     @Override
-    public Film getById(int id) {
-        return findOne(FIND_BY_ID_QUERY, id)
-                .orElseThrow(() -> new NotFoundException("Фильм с id = " + id + "не существует" ));
+    public Optional<Film> getById(Long id) {
+        return findOne(FIND_BY_ID_QUERY, id);
     }
+
+    @Override
+    public Optional<Film> findByNameAndReleaseDate(String name, LocalDate releaseDate) {
+        return findOne(FIND_EXIST_BY_NAME_DATE_QUERY, name, releaseDate);
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        return findMany(FIND_TOP_POPULAR_FILMS_SQL, count);
+    }
+
+    @Override
+    public boolean validateId(long id) {
+        return existsById(FIND_ID_EXIST, id);
+    }
+
 
 }

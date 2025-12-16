@@ -2,15 +2,14 @@ package ru.yandex.practicum.filmorate.dao.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class GenreDto {
+public class FriendDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long userId;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private long id;
-    private String name;
+    private Long friendId;
+
+    private String status;
 }

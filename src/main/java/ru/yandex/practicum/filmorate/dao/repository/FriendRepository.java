@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.dto.UserDto;
 import ru.yandex.practicum.filmorate.dao.repository.mappers.FriendRowMapper;
 import ru.yandex.practicum.filmorate.model.Friend;
 
@@ -13,11 +14,13 @@ import java.util.HashSet;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class FriendRepository extends BaseRepository<Friend> {
     private final JdbcTemplate jdbcTemplate;
 
     // SQL константы
+
+
+
     private static final String FIND_BY_ID_SQL = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_BY_USER_ID_SQL = "SELECT * FROM friends WHERE user_id = ?";
     private static final String FIND_BY_FRIEND_ID_SQL = "SELECT * FROM friends WHERE friend_id = ?";
@@ -38,11 +41,13 @@ public class FriendRepository extends BaseRepository<Friend> {
         this.jdbcTemplate = jdbc;
     }
 
-    public Optional<Friend> findById(Integer userId, Integer friendId) {
+
+
+    public Optional<Friend> findById(Long userId, Long friendId) {
         return findOne(FIND_BY_ID_SQL, userId, friendId);
     }
 
-    public List<Friend> findByUserId(Integer userId) {
+    public List<Friend> findByUserId(Long userId) {
         return findMany(FIND_BY_USER_ID_SQL, userId);
     }
 
@@ -54,11 +59,7 @@ public class FriendRepository extends BaseRepository<Friend> {
         return findMany(FIND_MUTUAL_SQL, userId, otherUserId);
     }
 
-    public Set<Integer> findFriendIdsByUserId(Integer userId) {
-        String sql = "SELECT friend_id FROM friends WHERE user_id = ? AND status = 'CONFIRMED'";
-        List<Integer> friendIds = jdbcTemplate.queryForList(sql, Integer.class, userId);
-        return new HashSet<>(friendIds);
-    }
+
 
     public Friend save(Friend friend) {
         if (exists(friend.getUserId(), friend.getFriendId())) {
@@ -75,7 +76,7 @@ public class FriendRepository extends BaseRepository<Friend> {
         return friend;
     }
 
-    public boolean delete(Integer userId, Integer friendId) {
+    public boolean delete(Long userId, Long friendId) {
         int rowsDeleted = jdbcTemplate.update(DELETE_BY_IDS_SQL, userId, friendId);
         return rowsDeleted > 0;
     }
@@ -84,7 +85,7 @@ public class FriendRepository extends BaseRepository<Friend> {
         jdbcTemplate.update(DELETE_BY_USER_ID_SQL, userId);
     }
 
-    public boolean exists(Integer userId, Integer friendId) {
+    public boolean exists(Long userId, Long friendId) {
         Integer count = jdbcTemplate.queryForObject(EXISTS_SQL, Integer.class, userId, friendId);
         return count != null && count > 0;
     }
@@ -93,4 +94,6 @@ public class FriendRepository extends BaseRepository<Friend> {
         Integer count = jdbcTemplate.queryForObject(COUNT_FRIENDS_SQL, Integer.class, userId);
         return count != null ? count : 0;
     }
+
+
 }

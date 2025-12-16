@@ -1,9 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import ru.yandex.practicum.filmorate.dao.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface FilmStorage {
 
@@ -14,5 +18,11 @@ public interface FilmStorage {
 
     Collection<Film> getAll();
 
-    Film getById(int id);
+    Optional<Film> getById(Long id);
+
+    Optional<Film> findByNameAndReleaseDate(String name, LocalDate releaseDate);
+
+    List<Film> getPopularFilms(int count);
+
+    boolean validateId(long id);
 }

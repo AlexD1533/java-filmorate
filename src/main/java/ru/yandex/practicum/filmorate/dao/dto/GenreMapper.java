@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.dao.dto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.GenreDto;
+
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GenreMapper {

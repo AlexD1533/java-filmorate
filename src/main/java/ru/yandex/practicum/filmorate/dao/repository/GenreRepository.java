@@ -84,7 +84,7 @@ public class GenreRepository extends BaseRepository<Genre> {
         }
     }
 
-    public Map<Integer, String> findAllGenreNames() {
+    public Map<Long, String> findAllGenreNames() {
         List<Genre> genres = findAll();
         return genres.stream()
                 .collect(Collectors.toMap(
@@ -98,9 +98,9 @@ public class GenreRepository extends BaseRepository<Genre> {
         return count != null ? count : 0;
     }
 
-    public int countFilmsByGenreId(Integer genreId) {
-        Integer count = jdbcTemplate.queryForObject(COUNT_FILMS_BY_GENRE_SQL, Integer.class, genreId);
-        return count != null ? count : 0;
+    public int countFilmsByGenreId(Long genreId) {
+        Long count = jdbcTemplate.queryForObject(COUNT_FILMS_BY_GENRE_SQL, Long.class, genreId);
+        return Math.toIntExact(count != null ? count : 0);
     }
 
     public List<String> findGenreNamesByFilmId(Long filmId) {
@@ -115,7 +115,7 @@ public class GenreRepository extends BaseRepository<Genre> {
     }
 
     // Дополнительные полезные методы
-    public Map<Integer, Integer> countFilmsForAllGenres() {
+    public Map<Long, Integer> countFilmsForAllGenres() {
         List<Genre> genres = findAll();
         return genres.stream()
                 .collect(Collectors.toMap(

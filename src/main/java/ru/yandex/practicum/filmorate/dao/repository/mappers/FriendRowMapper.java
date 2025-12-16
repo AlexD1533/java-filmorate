@@ -13,8 +13,8 @@ public class FriendRowMapper implements RowMapper<Friend> {
     @Override
     public Friend mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Friend friend = new Friend();
-        friend.setUserId(resultSet.getInt("user_id"));
-        friend.setFriendId(resultSet.getInt("friend_id"));
+        friend.setUserId(resultSet.getLong("user_id"));
+        friend.setFriendId(resultSet.getLong("friend_id"));
         friend.setStatus(resultSet.getString("status"));
         return friend;
     }

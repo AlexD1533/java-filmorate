@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.repository.GenreRepository;
+import ru.yandex.practicum.filmorate.dao.dto.MpaDto;
 import ru.yandex.practicum.filmorate.dao.repository.MpaRepository;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.MpaDto;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
 

@@ -8,9 +8,10 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GenreDto {
+public class LikeDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private long filmId;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private long id;
-    private String name;
+    private long userId;
 }
