@@ -11,13 +11,13 @@ import java.util.Set;
 @Data
 public class FilmDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long id;
+    private long id;
 
     private String name;
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private MpaRating mpa;
+    private int mpa;
     private Set<Genre> genres;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

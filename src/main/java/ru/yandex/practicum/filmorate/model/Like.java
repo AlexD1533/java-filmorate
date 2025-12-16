@@ -9,8 +9,8 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Like {
-    private int filmId;
-    private int userId;
+    private long filmId;
+    private long userId;
 
 
 }

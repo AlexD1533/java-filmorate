@@ -8,11 +8,10 @@ import java.util.*;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
     private int nextId = 1;
 
-    @Override
-    public Map<Integer, Film> getFilmsMap() {
+    public Map<Long, Film> getFilmsMap() {
         return Map.copyOf(films);
     }
 

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface UserStorage {
-    Map<Integer, User> getUsersMap();
 
     User create(User user);
 

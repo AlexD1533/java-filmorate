@@ -8,11 +8,11 @@ import java.util.*;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Integer, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
     private int nextId = 1;
 
-    @Override
-    public Map<Integer, User> getUsersMap() {
+
+    public Map<Long, User> getUsersMap() {
         return Map.copyOf(users);
     }
 

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dto;
+package ru.yandex.practicum.filmorate.dao.dto;
 
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -13,7 +13,7 @@ public class UpdateFilmRequest {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private MpaRating mpa;
+    private Integer mpa;
     private Set<Genre> genres;
 
     public boolean hasName() {

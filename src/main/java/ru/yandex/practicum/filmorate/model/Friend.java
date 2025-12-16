@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class Friend {
-    private int userId;
-    private int friendId;
+    private long userId;
+    private long friendId;
     private String status;
 
 }
