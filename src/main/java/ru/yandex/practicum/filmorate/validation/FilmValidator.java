@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.validation;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -15,7 +14,7 @@ public class FilmValidator {
 
     private static final LocalDate CINEMA_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
-    public void validate(NewFilmRequest film) {
+    public void validate(Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
             log.warn("Фильм: пустое название");
             throw new ValidationException("Название фильма не может быть пустым");

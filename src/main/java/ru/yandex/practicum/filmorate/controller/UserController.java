@@ -26,7 +26,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@RequestBody NewUserRequest request) {
         log.info("Пользователь: запрос на создание {}", request);
-        validator.validate(request);
+        
 
         if (request.getName() == null || request.getName().isBlank()) {
             request.setName(request.getLogin());

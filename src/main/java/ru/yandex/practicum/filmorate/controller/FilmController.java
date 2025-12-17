@@ -25,7 +25,6 @@ public class FilmController {
     @ResponseStatus(HttpStatus.CREATED)
     public FilmDto create(@RequestBody NewFilmRequest request) {  // Убрать @RequestParam
         log.info("Фильм: запрос на создание {}", request);
-        validator.validate(request);
 
         FilmDto createdFilm = filmService.create(request);
         log.info("Фильм создан с id={}", createdFilm.getId());
