@@ -22,7 +22,7 @@ public class FilmService {
     private final GenreService genreService;
     private final LikeService likeService;
 
-    public FilmDto create(NewFilmRequest request, Set<Long> genres) {
+    public FilmDto create(NewFilmRequest request) {
         Optional<Film> existingFilm = filmStorage.findByNameAndReleaseDate(
                 request.getName(),
                 request.getReleaseDate()
@@ -34,19 +34,21 @@ public class FilmService {
 
         Film film = FilmMapper.mapToFilm(request);
         film = filmStorage.create(film);
-
+        Set<Long> genres = request.getGenres();
         film.setGenres(genres);
         genreService.saveByFilm(film.getId(), genres);
 
         return FilmMapper.mapToFilmDto(film);
     }
 
-    public FilmDto update(UpdateFilmRequest request, Set<Long> genres) {
+    public FilmDto update(UpdateFilmRequest request) {
         Film existingFilm = filmStorage.findByNameAndReleaseDate(request.getName(), request.getReleaseDate())
                 .orElseThrow(() -> new NotFoundException("Фильм =" + request.getName() + " не найден"));
 
         Film updatedFilm = FilmMapper.updateFilmFields(existingFilm, request);
         updatedFilm = filmStorage.update(updatedFilm);
+
+        Set<Long> genres = updatedFilm.getGenres();
 
         updatedFilm.setGenres(genres);
         genreService.saveByFilm(updatedFilm.getId(), genres);
@@ -56,7 +58,7 @@ public class FilmService {
 
     public Collection<FilmDto> getAll() {
         return filmStorage.getAll().stream()
-                .map(film ->updateCollections(film, film.getId()))
+                .map(film -> updateCollections(film, film.getId()))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -69,13 +71,13 @@ public class FilmService {
     }
 
     public List<FilmDto> getPopularFilms(int count) {
-return filmStorage.getPopularFilms(count).stream()
-        .map(film ->updateCollections(film, film.getId()))
-        .map(FilmMapper::mapToFilmDto)
-        .toList();
+        return filmStorage.getPopularFilms(count).stream()
+                .map(film -> updateCollections(film, film.getId()))
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
     }
 
-    public Film updateCollections (Film film, long id) {
+    public Film updateCollections(Film film, long id) {
         film.setGenres(genreService.getGenresIdByFilm(id));
         film.setLikes(likeService.getLikesIdsByFilm(id));
         return film;

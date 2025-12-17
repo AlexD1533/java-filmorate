@@ -37,16 +37,17 @@ public class UserController {
         return createdUser;
     }
 
-    @PutMapping("/{id}")
-    public UserDto update(@PathVariable long id, @RequestBody UpdateUserRequest request) {
-        log.info("Пользователь: запрос на обновление {} с id={}", request, id);
-        validator.validate(request);
+    @PutMapping  // Убрать "/{id}" из аннотации
+    public UserDto update(@RequestBody UpdateUserRequest request) {  // Убрать @PathVariable
+        log.info("Пользователь: запрос на обновление {}", request);
+
 
         if (request.getName() == null || request.getName().isBlank()) {
             request.setName(request.getLogin());
         }
 
-        UserDto updatedUser = userService.updateUser(id, request);
+        // Передать id из request
+        UserDto updatedUser = userService.updateUser(request.getId(), request);
         log.info("Пользователь обновлён {}", updatedUser);
         return updatedUser;
     }

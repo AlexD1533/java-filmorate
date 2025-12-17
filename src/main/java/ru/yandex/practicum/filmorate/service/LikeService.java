@@ -52,13 +52,13 @@ public class LikeService {
         log.info("Пользователь {} удалил лайк с фильма {}", userId, filmId);
     }
 
-    public List<LikeDto> getLikesByFilmId(long filmId) {
+    public Set<LikeDto> getLikesByFilmId(long filmId) {
         validationExist.validateFilmExists(filmId);
 
         List<Like> likes = likeRepository.findByFilmId(filmId);
         return likes.stream()
                 .map(LikeMapper::mapToLikeDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public Set<Long>getLikesIdsByFilm(long filmId) {

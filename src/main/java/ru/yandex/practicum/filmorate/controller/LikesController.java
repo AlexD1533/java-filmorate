@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dao.dto.LikeDto;
 import ru.yandex.practicum.filmorate.service.LikeService;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -18,11 +19,11 @@ public class LikesController {
 
     @PutMapping("/{id}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public LikeDto addLike(@PathVariable long id, @PathVariable long userId) {
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Фильм: запрос на добавление лайка фильму {} от пользователя {}", id, userId);
-        LikeDto likeDto = likeService.addLike(id, userId);
+        likeService.addLike(id, userId);
         log.info("Пользователь {} поставил лайк фильму {}", userId, id);
-        return likeDto;
+
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -34,9 +35,9 @@ public class LikesController {
     }
 
     @GetMapping("/{id}/likes")
-    public List<LikeDto> getLikesByFilmId(@PathVariable long id) {
+    public Set<LikeDto> getLikesByFilmId(@PathVariable long id) {
         log.info("Фильм: запрос на получение лайков фильма {}", id);
-        List<LikeDto> likes = likeService.getLikesByFilmId(id);
+        Set<LikeDto> likes = likeService.getLikesByFilmId(id);
         log.info("Найдено {} лайков для фильма {}", likes.size(), id);
         return likes;
     }

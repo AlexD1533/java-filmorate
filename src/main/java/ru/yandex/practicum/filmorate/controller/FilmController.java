@@ -23,30 +23,24 @@ public class FilmController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto create(
-            @RequestBody NewFilmRequest request,
-            @RequestParam(required = false) List<Long> genreIds) {
-
-        log.info("Фильм: запрос на создание {} с жанрами: {}", request, genreIds);
+    public FilmDto create(@RequestBody NewFilmRequest request) {  // Убрать @RequestParam
+        log.info("Фильм: запрос на создание {}", request);
         validator.validate(request);
 
-        // Передаём genreIds в сервис
-        FilmDto createdFilm = filmService.create(request, genreIds);
+        FilmDto createdFilm = filmService.create(request);
         log.info("Фильм создан с id={}", createdFilm.getId());
         return createdFilm;
     }
 
     @PutMapping
-    public FilmDto update(
-            @RequestBody UpdateFilmRequest request,
-            @RequestParam(required = false) List<Long> genreIds) {
+    public FilmDto update(@RequestBody UpdateFilmRequest request) {  // Убрать @RequestParam
+        log.info("Фильм: запрос на обновление {}", request);
 
-        log.info("Фильм: запрос на обновление {} с жанрами: {}", request, genreIds);
-
-        FilmDto updatedFilm = filmService.update(request, genreIds);
+        FilmDto updatedFilm = filmService.update(request);
         log.info("Фильм обновлён {}", updatedFilm);
         return updatedFilm;
     }
+
 
     @GetMapping
     public Collection<FilmDto> getAll() {
