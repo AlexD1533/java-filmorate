@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-@Component("filmDbStorage")
+@Component
 public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
     private static final String FIND_EXIST_BY_NAME_DATE_QUERY = "SELECT * FROM films WHERE name = ? AND release_date = ?";
@@ -95,6 +95,5 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     public boolean validateId(long id) {
         return existsById(FIND_ID_EXIST, id);
     }
-
 
 }

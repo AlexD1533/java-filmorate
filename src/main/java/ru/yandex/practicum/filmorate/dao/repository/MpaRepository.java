@@ -13,44 +13,19 @@ import java.util.Optional;
 @Repository
 
 public class MpaRepository extends BaseRepository<MpaRating> {
-    private final JdbcTemplate jdbcTemplate;
 
-    // SQL константы
     private static final String FIND_ALL_SQL = "SELECT * FROM mpa_rating";
-    private static final String FIND_BY_FILM_ID_SQL = """
-        SELECT r.* 
-        FROM mpa_rating r
-        JOIN films f ON r.rating_id = f.rating_id
-        WHERE f.film_id = ?
-        """;
-    private static final String FIND_BY_NAME_SQL = "SELECT * FROM mpa_rating WHERE name = ?";
-    private static final String COUNT_FILMS_BY_RATING_SQL = "SELECT COUNT(*) FROM films WHERE rating_id = ?";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM mpa_rating WHERE id = ?";
+
+    public MpaRepository(JdbcTemplate jdbc, MpaRowMapper mapper) {
+        super(jdbc, mapper);
+    }
 
     public Optional<MpaRating> findById(Long id) {
         return findOne(FIND_BY_ID_SQL, id);
     }
-
-
-    public MpaRepository(JdbcTemplate jdbc, MpaRowMapper mapper) {
-        super(jdbc, mapper);
-        this.jdbcTemplate = jdbc;
-    }
-
     public List<MpaRating> findAll() {
         return findMany(FIND_ALL_SQL);
     }
 
-    public List<MpaRating> findByFilmId(Long filmId) {
-        return findMany(FIND_BY_FILM_ID_SQL, filmId);
-    }
-
-    public List<MpaRating> findByName(String name) {
-        return findMany(FIND_BY_NAME_SQL, name);
-    }
-
-    public int countFilmsByRatingId(Integer ratingId) {
-        Integer count = jdbcTemplate.queryForObject(COUNT_FILMS_BY_RATING_SQL, Integer.class, ratingId);
-        return count != null ? count : 0;
-    }
 }

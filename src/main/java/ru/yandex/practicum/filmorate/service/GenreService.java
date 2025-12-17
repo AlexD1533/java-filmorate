@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dao.repository.GenreRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +22,14 @@ public class GenreService {
                 .toList();
     }
 
-    public GenreDto getUserById(long genreId) {
+    public GenreDto getGenreById(long genreId) {
         return genreRepository.findById(genreId)
                 .map(GenreMapper::mapToGenreDto)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + genreId));
     }
+
+    public Set<Long> getGenresIdByFilm (long filmId) {
+        return genreRepository.findIdsByFilm(filmId);
+    }
+
 }

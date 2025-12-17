@@ -18,7 +18,7 @@ public class FilmDto {
     private LocalDate releaseDate;
     private Integer duration;
     private int mpa;
-    private Set<Genre> genres;
+    private Set<Long> genres;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Set<Long> likes;

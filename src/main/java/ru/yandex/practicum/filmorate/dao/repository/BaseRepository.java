@@ -68,4 +68,11 @@ public abstract class BaseRepository<T> {
     protected boolean existsById(String query, Object... params) {
         return jdbc.queryForObject(query, Boolean.class, params);
     }
+
+    public boolean delete(String query, Object... params) {
+        long rowsDeleted = jdbc.update(query, Long.class, params);
+        return rowsDeleted > 0;
+    }
+
+
 }

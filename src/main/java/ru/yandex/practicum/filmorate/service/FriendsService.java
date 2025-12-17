@@ -14,6 +14,8 @@ import ru.yandex.practicum.filmorate.validation.ValidationExist;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +37,7 @@ public class FriendsService {
         Friend friend = new Friend();
         friend.setUserId(userId);
         friend.setFriendId(friendId);
-        friend.setStatus("NOT_CONFIRMED"); // Исправлено на стандартный статус
+        friend.setStatus("NOT_CONFIRMED");
 
         return FriendMapper.mapToFriendDto(friendRepository.save(friend));
     }
@@ -89,6 +91,22 @@ public class FriendsService {
                 (status.equals("NOT_CONFIRMED") ||
                         status.equals("CONFIRMED")
                 );
+    }
+
+    public List<UserDto> getCommonFriends(long userId, long otherUserId) {
+        validationExist.validateUserExists(userId);
+        validationExist.validateUserExists(otherUserId);
+
+        List<UserDto> userFriends = getFriends(userId);
+        List<UserDto> otherUserFriends = getFriends(otherUserId);
+
+        Set<Long> userFriendIds = userFriends.stream()
+                .map(UserDto::getId)
+                .collect(Collectors.toSet());
+
+        return otherUserFriends.stream()
+                .filter(friend -> userFriendIds.contains(friend.getId()))
+                .collect(Collectors.toList());
     }
 
 }

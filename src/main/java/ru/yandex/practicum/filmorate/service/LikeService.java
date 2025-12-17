@@ -24,7 +24,6 @@ public class LikeService {
     private final ValidationExist validationExist;
 
     public LikeDto addLike(long filmId, long userId) {
-        // Проверяем существование фильма и пользователя
         validationExist.validateFilmExists(filmId);
         validationExist.validateUserExists(userId);
 
@@ -33,7 +32,6 @@ public class LikeService {
             throw new DuplicatedDataException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
         }
 
-        // Создаем и сохраняем лайк
         Like like = new Like(filmId, userId);
         like = likeRepository.save(like);
 
@@ -42,7 +40,6 @@ public class LikeService {
     }
 
     public void removeLike(long filmId, long userId) {
-        // Проверяем существование фильма и пользователя
         validationExist.validateFilmExists(filmId);
         validationExist.validateUserExists(userId);
 
@@ -64,6 +61,10 @@ public class LikeService {
                 .collect(Collectors.toList());
     }
 
+    public Set<Long>getLikesIdsByFilm(long filmId) {
+        return likeRepository.findUserIdsByFilmId(filmId);
+    }
+
     public List<LikeDto> getLikesByUserId(long userId) {
         validationExist.validateUserExists(userId);
 
@@ -72,36 +73,4 @@ public class LikeService {
                 .map(LikeMapper::mapToLikeDto)
                 .collect(Collectors.toList());
     }
-
-    public Set<Long> getUserIdsWhoLikedFilm(long filmId) {
-        validationExist.validateFilmExists(filmId);
-        return likeRepository.findUserIdsByFilmId(filmId);
-    }
-
-    public Set<Long> getFilmIdsLikedByUser(long userId) {
-        validationExist.validateUserExists(userId);
-        return likeRepository.findFilmIdsByUserId(userId);
-    }
-
-    public int getLikesCountForFilm(long filmId) {
-        validationExist.validateFilmExists(filmId);
-        return likeRepository.countLikesByFilmId(filmId);
-    }
-
-    public boolean hasUserLikedFilm(long filmId, long userId) {
-        return likeRepository.findUserIdsByFilmId(filmId).contains(userId);
-    }
-
-    public void deleteAllLikesForFilm(long filmId) {
-        validationExist.validateFilmExists(filmId);
-        likeRepository.deleteByFilmId(filmId);
-        log.info("Удалены все лайки для фильма {}", filmId);
-    }
-
-    public void deleteAllLikesForUser(long userId) {
-        validationExist.validateUserExists(userId);
-        likeRepository.deleteByUserId(userId);
-        log.info("Удалены все лайки пользователя {}", userId);
-    }
-
 }

@@ -12,7 +12,7 @@ public class UpdateFilmRequest {
     private LocalDate releaseDate;
     private Integer duration;
     private Integer mpa;
-    private Set<Genre> genres;
+    private Set<Long> genres;
 
     public boolean hasName() {
         return name != null && !name.isBlank();
