@@ -48,6 +48,5 @@ public class FriendsController {
         List<UserDto> commonFriends = friendsService.getCommonFriends(id, otherId);
         log.info("Найдено {} общих друзей у пользователей {} и {}", commonFriends.size(), id, otherId);
         return commonFriends;
-        throw new UnsupportedOperationException("Метод getCommonFriends еще не реализован");
     }
 }

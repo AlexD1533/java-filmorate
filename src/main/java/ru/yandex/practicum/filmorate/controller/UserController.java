@@ -53,19 +53,9 @@ public class UserController {
 
     @GetMapping
     public Collection<UserDto> getAll() {
-        Collection<User> users = userService.getAll();
-        log.info("Пользователь: запрос на получение всех ({} шт.)", users.size());
-        return users.stream()
-                .map(user -> {
-                    UserDto dto = new UserDto();
-                    dto.setId(user.getId());
-                    dto.setEmail(user.getEmail());
-                    dto.setLogin(user.getLogin());
-                    dto.setName(user.getName());
-                    dto.setBirthday(user.getBirthday());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+
+        log.info("Пользователь: запрос на получение всех пользователей)");
+        return userService.getAll();
     }
 
     @GetMapping("/{id}")

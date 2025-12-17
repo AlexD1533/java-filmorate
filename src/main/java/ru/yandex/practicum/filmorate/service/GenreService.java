@@ -32,4 +32,7 @@ public class GenreService {
         return genreRepository.findIdsByFilm(filmId);
     }
 
+    public void saveByFilm(long id, Set<Long> genres) {
+         genreRepository.saveGenresIdsByFilm(id, genres);
+    }
 }

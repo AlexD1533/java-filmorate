@@ -22,7 +22,7 @@ public class FilmService {
     private final GenreService genreService;
     private final LikeService likeService;
 
-    public FilmDto create(NewFilmRequest request, List<Long> genres) {
+    public FilmDto create(NewFilmRequest request, Set<Long> genres) {
         Optional<Film> existingFilm = filmStorage.findByNameAndReleaseDate(
                 request.getName(),
                 request.getReleaseDate()
@@ -34,17 +34,24 @@ public class FilmService {
 
         Film film = FilmMapper.mapToFilm(request);
         film = filmStorage.create(film);
+
+        film.setGenres(genres);
+        genreService.saveByFilm(film.getId(), genres);
+
         return FilmMapper.mapToFilmDto(film);
     }
 
-    public FilmDto update(UpdateFilmRequest request, List<Long> genres) {
+    public FilmDto update(UpdateFilmRequest request, Set<Long> genres) {
         Film existingFilm = filmStorage.findByNameAndReleaseDate(request.getName(), request.getReleaseDate())
                 .orElseThrow(() -> new NotFoundException("Фильм =" + request.getName() + " не найден"));
 
         Film updatedFilm = FilmMapper.updateFilmFields(existingFilm, request);
         updatedFilm = filmStorage.update(updatedFilm);
 
-        return FilmMapper.mapToFilmDto(updateCollections(updatedFilm, updatedFilm.getId()));
+        updatedFilm.setGenres(genres);
+        genreService.saveByFilm(updatedFilm.getId(), genres);
+
+        return FilmMapper.mapToFilmDto(updatedFilm);
     }
 
     public Collection<FilmDto> getAll() {
@@ -58,7 +65,7 @@ public class FilmService {
         Film film = filmStorage.getById(id)
                 .orElseThrow(() -> new NotFoundException("Фильм с id=" + id + " не найден"));
         return FilmMapper.mapToFilmDto(updateCollections(film, id));
-);
+
     }
 
     public List<FilmDto> getPopularFilms(int count) {

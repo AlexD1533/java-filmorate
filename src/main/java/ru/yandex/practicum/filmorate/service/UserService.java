@@ -36,19 +36,27 @@ private final FriendRepository friendRepository;
                 .map(user -> UserMapper.updateUserFields(user, request))
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         updatedUser = userStorage.update(updatedUser);
-        return UserMapper.mapToUserDto(updatedUser);
+
+        return UserMapper.mapToUserDto(updateCollections(updatedUser, updatedUser.getId()));
     }
 
-    public Collection<User> getAll() {
-        return userStorage.getAll();
+    public Collection<UserDto> getAll() {
+        return userStorage.getAll().stream()
+                .map(user -> updateCollections(user, user.getId()))
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
     public UserDto getById(long id) {
 
         User user = userStorage.getById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + id));
-        List<Friend> friends = friendRepository.findByUserId(id);
-        user.setFriends(friends);
-        return UserMapper.mapToUserDto(user);
+        return UserMapper.mapToUserDto(updateCollections(user, id));
     }
+
+    public User updateCollections (User user, long userId) {
+        user.setFriends(friendRepository.findByUserId(userId));
+        return user;
+    }
+
 }
