@@ -15,11 +15,10 @@ import java.util.Optional;
 public class UserRepository extends BaseRepository<User> implements UserStorage {
     private static final String FIND_BY_EMAIL_QUERY = "SELECT * FROM users WHERE email = ?";
     private static final String FIND_ID_EXIST = "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = ?)";
-    private static final String FIND_ALL_FRIENDS = """ 
-                    SELECT u.* FROM users AS u
-                    JOIN friends AS f ON u.user_id = f.friend_id
-                    WHERE f.user_id = ?""";
-
+    private static final String FIND_ALL_FRIENDS =
+            "SELECT u.* FROM users AS u " +
+                    "JOIN friends AS f ON u.user_id = f.friend_id " +
+                    "WHERE f.user_id = ?";
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE user_id = ?";
     private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday) VALUES (?, ?, ?, ?)";
