@@ -24,6 +24,7 @@ public class MpaRepository extends BaseRepository<MpaRating> {
     public Optional<MpaRating> findById(Long id) {
         return findOne(FIND_BY_ID_SQL, id);
     }
+
     public List<MpaRating> findAll() {
         return findMany(FIND_ALL_SQL);
     }
