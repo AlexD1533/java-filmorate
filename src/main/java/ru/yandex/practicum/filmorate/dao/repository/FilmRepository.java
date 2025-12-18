@@ -21,16 +21,13 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
             "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE film_id = ?";
-    private static final String FIND_TOP_POPULAR_FILMS_SQL = """
-            SELECT
-                f.*,
-                COUNT(l.user_id) AS likes_count
-            FROM films f
-            LEFT JOIN likes l ON f.film_id = l.film_id
-            GROUP BY f.film_id, f.name
-            ORDER BY COUNT(l.user_id) DESC, f.film_id
-            FETCH FIRST ? ROWS ONLY""";
-
+    private static final String FIND_TOP_POPULAR_FILMS_SQL =
+            "SELECT f.*, COUNT(l.user_id) AS likes_count " +
+                    "FROM films f " +
+                    "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                    "GROUP BY f.film_id, f.name " +
+                    "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
+                    "FETCH FIRST ? ROWS ONLY";
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
