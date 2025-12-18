@@ -28,6 +28,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "GROUP BY f.film_id, f.name " +
                     "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
                     "FETCH FIRST ? ROWS ONLY";
+
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
