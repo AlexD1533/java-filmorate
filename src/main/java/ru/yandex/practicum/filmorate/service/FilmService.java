@@ -23,7 +23,8 @@ public class FilmService {
     private final LikeService likeService;
 
 
-private final FilmMapper filmMapper;
+    private final FilmMapper filmMapper;
+
     public FilmDto create(NewFilmRequest request) {
 
         Film film = filmMapper.mapToFilm(request);

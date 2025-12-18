@@ -10,24 +10,22 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-public class Validation{
-    private  final UserStorage userStorage;
-    private  final FilmStorage filmStorage;
+public class Validation {
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
-    public void valivationMpa(long mpaId) {
+    public void validationMpa(long mpaId) {
         if (mpaId > 5 || mpaId < 1) {
             throw new NotFoundException("Выход за пределы рейтинга");
         }
     }
 
     public void validationGenre(Set<Long> genres) {
-        for(Long g: genres) {
+        for (Long g : genres) {
             if (g < 1 || g > 6) {
                 throw new NotFoundException("Выход за пределы жанра");
             }
         }
-
-
     }
 
     public void validateUserExists(long userId) {

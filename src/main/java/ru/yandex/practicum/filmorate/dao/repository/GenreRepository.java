@@ -22,7 +22,6 @@ public class GenreRepository extends BaseRepository<Genre> {
         super(jdbc, mapper);
     }
 
-    // Существующие методы
     public List<Genre> findAll() {
         return findMany(FIND_ALL_SQL);
     }
@@ -35,6 +34,7 @@ public class GenreRepository extends BaseRepository<Genre> {
         List<Long> result = jdbc.queryForList(FIND_ALL_BY_FILM_ID_SQL, Long.class, filmId);
         return new HashSet<>(result);
     }
+
     public List<Genre> findsGenresByFilm(long filmId) {
         return findMany(FIND_ALL_BY_ID_SQL, filmId);
     }

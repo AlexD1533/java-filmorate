@@ -27,5 +27,4 @@ public class MpaRepository extends BaseRepository<MpaRating> {
     public List<MpaRating> findAll() {
         return findMany(FIND_ALL_SQL);
     }
-
 }

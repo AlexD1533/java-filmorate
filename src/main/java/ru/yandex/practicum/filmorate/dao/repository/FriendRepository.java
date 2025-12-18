@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.dao.repository;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -48,7 +49,7 @@ public class FriendRepository extends BaseRepository<Friend> {
     }
 
     public boolean delete(Long userId, Long friendId) {
-      return delete(DELETE_BY_IDS_SQL, userId, friendId);
+        return delete(DELETE_BY_IDS_SQL, userId, friendId);
     }
 
 

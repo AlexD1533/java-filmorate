@@ -24,7 +24,6 @@ public class FriendsService {
     private final UserRepository userDbStorage;
     private final Validation validation;
 
-
     public FriendDto addFriend(long userId, long friendId) {
         validation.validateUserExists(userId);
         validation.validateUserExists(friendId);
@@ -40,20 +39,18 @@ public class FriendsService {
 
         return FriendMapper.mapToFriendDto(friendRepository.save(friend));
     }
+
     public void removeFriend(long userId, long friendId) {
         validation.validateUserExists(userId);
         validation.validateUserExists(friendId);
 
-        // Проверяем, существует ли дружба
         Optional<Friend> existingFriendship = friendRepository.findById(userId, friendId);
 
-        // Если дружбы нет - просто завершаем метод (идемпотентная операция)
         if (existingFriendship.isEmpty()) {
             log.debug("Friendship does not exist: {} -> {}, nothing to delete", userId, friendId);
             return;
         }
 
-        // Если дружба есть - удаляем
         boolean deleted = friendRepository.delete(userId, friendId);
         if (!deleted) {
             log.error("Failed to delete existing friendship: {} -> {}", userId, friendId);
@@ -117,5 +114,4 @@ public class FriendsService {
                 .filter(friend -> userFriendIds.contains(friend.getId()))
                 .collect(Collectors.toList());
     }
-
 }

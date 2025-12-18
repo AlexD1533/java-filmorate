@@ -16,13 +16,11 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
     private static final String FIND_EXIST_BY_NAME_DATE_QUERY = "SELECT * FROM films WHERE name = ? AND release_date = ?";
     private static final String FIND_ID_EXIST = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
-
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE film_id = ?";
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
             "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE film_id = ?";
-
     private static final String FIND_TOP_POPULAR_FILMS_SQL = """
             SELECT
                 f.*,
@@ -32,8 +30,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             GROUP BY f.film_id, f.name
             ORDER BY COUNT(l.user_id) DESC, f.film_id
             FETCH FIRST ? ROWS ONLY""";
-
-
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -68,12 +64,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         return film;
     }
 
-
     @Override
     public Collection<Film> getAll() {
         return findMany(FIND_ALL_QUERY);
     }
-
 
 
     @Override

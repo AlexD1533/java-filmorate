@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MpaService {
-   private final MpaRepository mpaRepository;
+    private final MpaRepository mpaRepository;
 
     public List<MpaDto> getMpa() {
         return mpaRepository.findAll().stream()
@@ -27,5 +27,4 @@ public class MpaService {
                 .orElseThrow(() -> new NotFoundException("Рейтинг не найден с ID: " + mpaId));
 
     }
-
 }

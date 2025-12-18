@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolationException;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorHandler {
 
-    // Обработчик для ошибок валидации @Valid
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -27,7 +27,6 @@ public class ErrorHandler {
         return errors;
     }
 
-    // Обработчик для ошибок валидации @Validated (параметры методов)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public Map<String, String> handleConstraintViolationException(ConstraintViolationException ex) {

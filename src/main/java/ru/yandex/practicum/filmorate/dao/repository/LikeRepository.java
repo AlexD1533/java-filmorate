@@ -13,12 +13,9 @@ import java.util.HashSet;
 public class LikeRepository extends BaseRepository<Like> {
     private final JdbcTemplate jdbcTemplate;
 
-
     private static final String FIND_BY_FILM_ID_SQL = "SELECT * FROM likes WHERE film_id = ?";
     private static final String FIND_BY_USER_ID_SQL = "SELECT * FROM likes WHERE user_id = ?";
     private static final String FIND_USER_IDS_BY_FILM_ID_SQL = "SELECT user_id FROM likes WHERE film_id = ?";
-
-
     private static final String INSERT_SQL = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_BY_IDS_SQL = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
 

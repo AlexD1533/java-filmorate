@@ -14,7 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public final class FilmMapper {
 
-    private  final MpaService mpaService;
+    private final MpaService mpaService;
     private final GenreService genreService;
 
 

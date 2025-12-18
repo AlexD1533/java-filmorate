@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
@@ -28,7 +29,7 @@ public class FilmController {
     @ResponseStatus(HttpStatus.CREATED)
     public FilmDto create(@Valid @RequestBody NewFilmRequest request) {  // Убрать @RequestParam
         log.info("Фильм: запрос на создание {}", request);
-        validation.valivationMpa(request.getMpa());
+        validation.validationMpa(request.getMpa());
         validation.validationGenre(request.getGenres());
         FilmDto createdFilm = filmService.create(request);
         log.info("Фильм создан с id={}", createdFilm.getId());
@@ -38,7 +39,7 @@ public class FilmController {
     @PutMapping
     public FilmDto update(@Valid @RequestBody UpdateFilmRequest request) {  // Убрать @RequestParam
         log.info("Фильм: запрос на обновление {}", request);
-        validation.valivationMpa(request.getMpa());
+        validation.validationMpa(request.getMpa());
         validation.validationGenre(request.getGenres());
 
         FilmDto updatedFilm = filmService.update(request);

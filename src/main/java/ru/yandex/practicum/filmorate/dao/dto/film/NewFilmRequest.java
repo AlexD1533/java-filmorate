@@ -30,7 +30,6 @@ public class NewFilmRequest {
         return !releaseDate.isBefore(LocalDate.of(1895, 12, 28));
     }
 
-
     @Positive(message = "Продолжительность должна быть положительной")
     private Integer duration;
 
@@ -51,10 +50,11 @@ public class NewFilmRequest {
         }
 
     }
-        @JsonSetter("mpa")
-        public void setMpaToLong(MpaRating mpa) {
-            if (mpa != null) {
-                this.mpa = mpa.getId();
-            }
+
+    @JsonSetter("mpa")
+    public void setMpaToLong(MpaRating mpa) {
+        if (mpa != null) {
+            this.mpa = mpa.getId();
         }
     }
+}

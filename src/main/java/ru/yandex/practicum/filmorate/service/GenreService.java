@@ -30,16 +30,16 @@ public class GenreService {
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + genreId));
     }
 
-    public Set<Long> getGenresIdByFilm (long filmId) {
+    public Set<Long> getGenresIdByFilm(long filmId) {
         return genreRepository.findIdsByFilm(filmId);
     }
 
-    public Set<Genre> getGenresByFilmId (long filmId) {
+    public Set<Genre> getGenresByFilmId(long filmId) {
         return new LinkedHashSet<>(genreRepository.findsGenresByFilm(filmId));
 
     }
 
     public void saveByFilm(long id, Set<Long> genres) {
-         genreRepository.saveGenresIdsByFilm(id, genres);
+        genreRepository.saveGenresIdsByFilm(id, genres);
     }
 }

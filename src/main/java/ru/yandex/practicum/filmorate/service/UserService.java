@@ -19,7 +19,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userStorage;
-private final FriendRepository friendRepository;
+    private final FriendRepository friendRepository;
 
     public UserDto create(NewUserRequest request) {
         Optional<User> alreadyExistUser = userStorage.findByEmail(request.getEmail());
@@ -55,7 +55,7 @@ private final FriendRepository friendRepository;
         return UserMapper.mapToUserDto(updateCollections(user, id));
     }
 
-    public User updateCollections (User user, long userId) {
+    public User updateCollections(User user, long userId) {
         user.setFriends(friendRepository.findByUserId(userId));
         return user;
     }

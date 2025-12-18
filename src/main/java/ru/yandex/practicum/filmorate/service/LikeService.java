@@ -61,7 +61,7 @@ public class LikeService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<Long>getLikesIdsByFilm(long filmId) {
+    public Set<Long> getLikesIdsByFilm(long filmId) {
         return likeRepository.findUserIdsByFilmId(filmId);
     }
 
