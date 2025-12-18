@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import ru.yandex.practicum.filmorate.dao.dto.LikeDto;
-import ru.yandex.practicum.filmorate.dao.dto.LikeMapper;
+import ru.yandex.practicum.filmorate.dao.dto.like.LikeDto;
+import ru.yandex.practicum.filmorate.dao.dto.like.LikeMapper;
 import ru.yandex.practicum.filmorate.dao.repository.LikeRepository;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.validation.ValidationExist;
+import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.List;
 import java.util.Set;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LikeService {
     private final LikeRepository likeRepository;
-    private final ValidationExist validationExist;
+    private final Validation validation;
 
     public LikeDto addLike(long filmId, long userId) {
-        validationExist.validateFilmExists(filmId);
-        validationExist.validateUserExists(userId);
+        validation.validateFilmExists(filmId);
+        validation.validateUserExists(userId);
 
         Set<Long> userLikes = likeRepository.findUserIdsByFilmId(filmId);
         if (userLikes.contains(userId)) {
@@ -40,8 +40,8 @@ public class LikeService {
     }
 
     public void removeLike(long filmId, long userId) {
-        validationExist.validateFilmExists(filmId);
-        validationExist.validateUserExists(userId);
+        validation.validateFilmExists(filmId);
+        validation.validateUserExists(userId);
 
         // Удаляем лайк
         boolean deleted = likeRepository.delete(filmId, userId);
@@ -53,7 +53,7 @@ public class LikeService {
     }
 
     public Set<LikeDto> getLikesByFilmId(long filmId) {
-        validationExist.validateFilmExists(filmId);
+        validation.validateFilmExists(filmId);
 
         List<Like> likes = likeRepository.findByFilmId(filmId);
         return likes.stream()
@@ -66,7 +66,7 @@ public class LikeService {
     }
 
     public List<LikeDto> getLikesByUserId(long userId) {
-        validationExist.validateUserExists(userId);
+        validation.validateUserExists(userId);
 
         List<Like> likes = likeRepository.findByUserId(userId);
         return likes.stream()

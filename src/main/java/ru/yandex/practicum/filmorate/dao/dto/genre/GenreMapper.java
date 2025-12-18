@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.dto;
+package ru.yandex.practicum.filmorate.dao.dto.genre;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

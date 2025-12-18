@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.dto;
+package ru.yandex.practicum.filmorate.dao.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,8 +9,6 @@ import java.time.LocalDate;
 
 @Data
 public class NewUserRequest {
-    // ID не валидируем для создания, так как обычно генерируется автоматически
-    private Long id;
 
     @Email(message = "Некорректный формат email")
     @NotBlank(message = "Email не может быть пустым")

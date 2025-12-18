@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.dto.GenreDto;
-import ru.yandex.practicum.filmorate.dao.dto.GenreMapper;
+import ru.yandex.practicum.filmorate.dao.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dao.dto.genre.GenreMapper;
 import ru.yandex.practicum.filmorate.dao.repository.GenreRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +32,11 @@ public class GenreService {
 
     public Set<Long> getGenresIdByFilm (long filmId) {
         return genreRepository.findIdsByFilm(filmId);
+    }
+
+    public Set<Genre> getGenresByFilmId (long filmId) {
+        return new LinkedHashSet<>(genreRepository.findsGenresByFilm(filmId));
+
     }
 
     public void saveByFilm(long id, Set<Long> genres) {

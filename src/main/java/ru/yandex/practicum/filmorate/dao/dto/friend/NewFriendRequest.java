@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.dto;
+package ru.yandex.practicum.filmorate.dao.dto.friend;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,7 +16,7 @@ public class NewFriendRequest {
     @Positive(message = "ID друга должен быть положительным")
     private Long friendId;
 
-    @Pattern(regexp = "not_confirmed|confirmed|rejected",
-            message = "Статус должен быть: not_confirmed, confirmed или rejected")
-    private String status = "not_confirmed"; // Значение по умолчанию
+    @Pattern(regexp = "PENDING|confirmed|rejected",
+            message = "Статус должен быть: PENDING, confirmed или rejected")
+    private String status = "PENDING"; // Значение по умолчанию
 }

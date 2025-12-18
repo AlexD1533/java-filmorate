@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.dto.MpaDto;
+import ru.yandex.practicum.filmorate.dao.dto.mpa.MpaDto;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
@@ -27,9 +28,9 @@ public class MpaController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public MpaDto getMpaById(@PathVariable long id) {
+    public MpaRating getMpaById(@PathVariable long id) {
         log.info("Рейтинг MPA: запрос на получение рейтинга по id={}", id);
-        MpaDto mpa = mpaService.getMpaById(id);
+        MpaRating mpa = mpaService.getMpaById(id);
         log.info("Найден рейтинг MPA: {}", mpa);
         return mpa;
     }

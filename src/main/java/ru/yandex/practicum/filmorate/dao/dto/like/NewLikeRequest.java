@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.dto;
+package ru.yandex.practicum.filmorate.dao.dto.like;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

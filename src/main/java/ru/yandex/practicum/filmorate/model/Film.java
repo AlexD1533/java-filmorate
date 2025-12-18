@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -18,7 +19,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private int mpa;
-    private Set<Long> genres;
-    private Set<Long> likes;
+    private Long mpa;
+    private Set<Long> genres = new HashSet<>();
+    private Set<Long> likes = new HashSet<>();
 }

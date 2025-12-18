@@ -3,34 +3,31 @@ package ru.yandex.practicum.filmorate.dao.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.dto.UserDto;
-import ru.yandex.practicum.filmorate.dao.dto.UserMapper;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.dao.dto.user.UserDto;
+import ru.yandex.practicum.filmorate.dao.dto.user.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class UserDbStorage extends BaseRepository<User> implements UserStorage {
+public class UserRepository extends BaseRepository<User> implements UserStorage {
     private static final String FIND_BY_EMAIL_QUERY = "SELECT * FROM users WHERE email = ?";
     private static final String FIND_ID_EXIST = "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = ?)";
 
     private static final String FIND_ALL_FRIENDS =
             """ 
             SELECT u.* FROM users AS u
-            LEFT JOIN friends AS f ON u.user_id = f.friend_id
+            JOIN friends AS f ON u.user_id = f.friend_id
             WHERE f.user_id = ?""";
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE user_id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
-            "VALUES (?, ?, ?, ?) returning user_id";
-    private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ? WHERE user_id = ?";
+    private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday) VALUES (?, ?, ?, ?)";
+    private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
 
-    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
+    public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
     }
 
@@ -51,10 +48,10 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     public User create(User user) {
         long id = insert(
                 INSERT_QUERY,
-                user.getName(),
                 user.getEmail(),
                 user.getLogin(),
-               user.getBirthday()
+                user.getName(),
+                user.getBirthday()
         );
         user.setId(id);
         return user;
@@ -64,9 +61,10 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     public User update(User user) {
         update(
                 UPDATE_QUERY,
-                user.getName(),
                 user.getEmail(),
                 user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
                 user.getId()
         );
         return user;
@@ -80,7 +78,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
         }
 
     public List<UserDto> getAllFriends(long userId) {
-        return findMany(FIND_ALL_FRIENDS).stream()
+        return findMany(FIND_ALL_FRIENDS, userId).stream()
                 .map(UserMapper::mapToUserDto)
                 .toList();
 

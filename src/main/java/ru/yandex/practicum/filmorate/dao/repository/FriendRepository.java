@@ -19,7 +19,7 @@ public class FriendRepository extends BaseRepository<Friend> {
     private static final String DELETE_BY_IDS_SQL = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
     private static final String EXISTS_SQL = "SELECT COUNT(*) FROM friends WHERE user_id = ? AND friend_id = ?";
 
-    public FriendRepository(JdbcTemplate jdbc, FriendRowMapper mapper, JdbcTemplate jdbcTemplate) {
+    public FriendRepository(JdbcTemplate jdbc, FriendRowMapper mapper) {
         super(jdbc, mapper);
     }
 
@@ -39,7 +39,7 @@ public class FriendRepository extends BaseRepository<Friend> {
                     friend.getUserId(),
                     friend.getFriendId());
         } else {
-            update(INSERT_SQL,
+            jdbc.update(INSERT_SQL,
                     friend.getUserId(),
                     friend.getFriendId(),
                     friend.getStatus());

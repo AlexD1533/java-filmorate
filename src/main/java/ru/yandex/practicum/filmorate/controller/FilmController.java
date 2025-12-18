@@ -1,14 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dao.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.dao.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
+import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.validation.FilmValidator;
+import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,22 +20,26 @@ import java.util.List;
 @RequestMapping("/films")
 @RequiredArgsConstructor
 public class FilmController {
-    private final FilmValidator validator;
+
     private final FilmService filmService;
+    private final Validation validation;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto create(@RequestBody NewFilmRequest request) {  // Убрать @RequestParam
+    public FilmDto create(@Valid @RequestBody NewFilmRequest request) {  // Убрать @RequestParam
         log.info("Фильм: запрос на создание {}", request);
-
+        validation.valivationMpa(request.getMpa());
+        validation.validationGenre(request.getGenres());
         FilmDto createdFilm = filmService.create(request);
         log.info("Фильм создан с id={}", createdFilm.getId());
         return createdFilm;
     }
 
     @PutMapping
-    public FilmDto update(@RequestBody UpdateFilmRequest request) {  // Убрать @RequestParam
+    public FilmDto update(@Valid @RequestBody UpdateFilmRequest request) {  // Убрать @RequestParam
         log.info("Фильм: запрос на обновление {}", request);
+        validation.valivationMpa(request.getMpa());
+        validation.validationGenre(request.getGenres());
 
         FilmDto updatedFilm = filmService.update(request);
         log.info("Фильм обновлён {}", updatedFilm);

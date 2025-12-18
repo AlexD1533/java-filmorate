@@ -55,7 +55,7 @@ public abstract class BaseRepository<T> {
             return ps;
         }, keyHolder);
 
-        Long id = keyHolder.getKeyAs(Long.class);
+        Integer id = keyHolder.getKeyAs(Integer.class);
 
         // Возвращаем id нового пользователя
         if (id != null) {
@@ -69,10 +69,9 @@ public abstract class BaseRepository<T> {
         return jdbc.queryForObject(query, Boolean.class, params);
     }
 
-    public boolean delete(String query, Object... params) {
-        long rowsDeleted = jdbc.update(query, Long.class, params);
+    protected boolean delete(String query, Object... params) {
+        int rowsDeleted = jdbc.update(query, params);
         return rowsDeleted > 0;
     }
-
 
 }

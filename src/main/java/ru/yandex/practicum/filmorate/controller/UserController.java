@@ -1,32 +1,32 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.dto.NewUserRequest;
-import ru.yandex.practicum.filmorate.dao.dto.UpdateUserRequest;
-import ru.yandex.practicum.filmorate.dao.dto.UserDto;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dao.dto.user.NewUserRequest;
+import ru.yandex.practicum.filmorate.dao.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dao.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.validation.UserValidator;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
+
 public class UserController {
-    private final UserValidator validator;
     private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody NewUserRequest request) {
+    public UserDto create(@Valid @RequestBody NewUserRequest request) {
         log.info("Пользователь: запрос на создание {}", request);
-        
+
 
         if (request.getName() == null || request.getName().isBlank()) {
             request.setName(request.getLogin());
@@ -37,8 +37,8 @@ public class UserController {
         return createdUser;
     }
 
-    @PutMapping  // Убрать "/{id}" из аннотации
-    public UserDto update(@RequestBody UpdateUserRequest request) {  // Убрать @PathVariable
+    @PutMapping
+    public UserDto update(@Valid @RequestBody UpdateUserRequest request) {  // Убрать @PathVariable
         log.info("Пользователь: запрос на обновление {}", request);
 
 

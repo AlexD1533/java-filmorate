@@ -15,7 +15,7 @@ import java.util.Optional;
 public class MpaRepository extends BaseRepository<MpaRating> {
 
     private static final String FIND_ALL_SQL = "SELECT * FROM mpa_rating";
-    private static final String FIND_BY_ID_SQL = "SELECT * FROM mpa_rating WHERE id = ?";
+    private static final String FIND_BY_ID_SQL = "SELECT * FROM mpa_rating WHERE rating_id = ?";
 
     public MpaRepository(JdbcTemplate jdbc, MpaRowMapper mapper) {
         super(jdbc, mapper);

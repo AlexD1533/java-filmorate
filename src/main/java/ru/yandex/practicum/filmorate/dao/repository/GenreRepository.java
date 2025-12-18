@@ -11,6 +11,7 @@ import java.util.*;
 public class GenreRepository extends BaseRepository<Genre> {
 
     // SQL константы
+    private static final String FIND_ALL_BY_ID_SQL = "SELECT g.genre_id, g.name FROM genre AS g JOIN film_genre AS fg ON g.genre_id = fg.genre_id  WHERE fg.film_id = ?";
     private static final String FIND_ALL_SQL = "SELECT * FROM genre ORDER BY genre_id";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM genre WHERE genre_id = ?";
     private static final String FIND_ALL_BY_FILM_ID_SQL = "SELECT genre_id FROM film_genre WHERE film_id = ?";
@@ -33,6 +34,9 @@ public class GenreRepository extends BaseRepository<Genre> {
     public Set<Long> findIdsByFilm(long filmId) {
         List<Long> result = jdbc.queryForList(FIND_ALL_BY_FILM_ID_SQL, Long.class, filmId);
         return new HashSet<>(result);
+    }
+    public List<Genre> findsGenresByFilm(long filmId) {
+        return findMany(FIND_ALL_BY_ID_SQL, filmId);
     }
 
     public void saveGenresIdsByFilm(long filmId, Set<Long> genreIds) {
