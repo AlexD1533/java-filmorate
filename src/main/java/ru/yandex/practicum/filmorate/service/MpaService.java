@@ -22,8 +22,9 @@ public class MpaService {
                 .toList();
     }
 
-    public MpaRating getMpaById(long mpaId) {
+    public MpaDto getMpaById(long mpaId) {
         return mpaRepository.findById(mpaId)
+                .map(MpaMapper::mapToMpaDto)
                 .orElseThrow(() -> new NotFoundException("Рейтинг не найден с ID: " + mpaId));
 
     }

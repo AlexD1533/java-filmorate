@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.friend.FriendDto;
 import ru.yandex.practicum.filmorate.dao.dto.friend.FriendMapper;
+import ru.yandex.practicum.filmorate.dao.dto.friend.UpdateFriendRequest;
 import ru.yandex.practicum.filmorate.dao.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.dao.repository.FriendRepository;
 import ru.yandex.practicum.filmorate.dao.repository.UserRepository;
@@ -65,7 +66,10 @@ public class FriendsService {
         return userDbStorage.getAllFriends(userId);
     }
 
-    public FriendDto updateFriendshipStatus(long userId, long friendId, String newStatus) {
+    public FriendDto updateFriendshipStatus(UpdateFriendRequest request) {
+        Long userId = request.getUserId();
+        Long friendId = request.getFriendId();
+        String newStatus = request.getStatus();
         validation.validateUserExists(userId);
         validation.validateUserExists(friendId);
 

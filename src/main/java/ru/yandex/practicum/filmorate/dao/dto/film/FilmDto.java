@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao.dto.film;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.dao.dto.mpa.MpaDto;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
@@ -18,7 +19,7 @@ public class FilmDto {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private MpaRating mpa;
+    private MpaDto mpa;
 
     private Set<Genre> genres = new HashSet<>();
 

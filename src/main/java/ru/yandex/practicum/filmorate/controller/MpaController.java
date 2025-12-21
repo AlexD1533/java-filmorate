@@ -29,9 +29,9 @@ public class MpaController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public MpaRating getMpaById(@PathVariable long id) {
+    public MpaDto getMpaById(@PathVariable long id) {
         log.info("Рейтинг MPA: запрос на получение рейтинга по id={}", id);
-        MpaRating mpa = mpaService.getMpaById(id);
+        MpaDto mpa = mpaService.getMpaById(id);
         log.info("Найден рейтинг MPA: {}", mpa);
         return mpa;
     }
