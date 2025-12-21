@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.dto.mpa.MpaDto;
-import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;

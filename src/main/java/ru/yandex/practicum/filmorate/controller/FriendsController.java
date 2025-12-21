@@ -33,8 +33,8 @@ public class FriendsController {
     public FriendDto updateStatus(@Valid @RequestBody UpdateFriendRequest request) {
         log.info("Пользователь: запрос на изменение статуса дружбы: {} -> {}", request.getUserId(), request.getFriendId());
         FriendDto friendDto = friendsService.updateFriendshipStatus(request);
-        log.info("Пользователь {} изменил статус дружбы с  {} на {}", friendDto.getUserId(), friendDto.getFriendId(),  friendDto.getStatus());
-return friendDto;
+        log.info("Пользователь {} изменил статус дружбы с  {} на {}", friendDto.getUserId(), friendDto.getFriendId(), friendDto.getStatus());
+        return friendDto;
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
