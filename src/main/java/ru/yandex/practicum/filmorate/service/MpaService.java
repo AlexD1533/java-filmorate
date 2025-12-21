@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.dao.dto.mpa.MpaDto;
 import ru.yandex.practicum.filmorate.dao.dto.mpa.MpaMapper;
 import ru.yandex.practicum.filmorate.dao.repository.MpaRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.MpaRating;
-
 
 import java.util.List;
 
