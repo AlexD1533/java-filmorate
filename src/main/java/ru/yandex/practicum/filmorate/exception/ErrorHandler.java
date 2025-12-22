@@ -1,51 +1,86 @@
 package ru.yandex.practicum.filmorate.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.NoSuchElementException;
+import jakarta.validation.ConstraintViolationException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidation(final ValidationException e) {
-        return new ErrorResponse(e.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalArgument(final IllegalArgumentException e) {
-        return new ErrorResponse(e.getMessage());
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Map<String, String> handleConstraintViolationException(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            String fieldName = violation.getPropertyPath().toString();
+            String errorMessage = violation.getMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(final NoSuchElementException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(
+                e.getMessage(),
+                "Запрашиваемый объект не найден"
+        );
     }
 
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflict(final DuplicatedDataException e) {
-        return new ErrorResponse(e.getMessage());
+    @ExceptionHandler(DuplicatedDataException.class)
+    public ErrorResponse handleDuplicatedDataException(final DuplicatedDataException e) {
+        return new ErrorResponse(
+                e.getMessage(),
+                "Обнаружен конфликт данных"
+        );
     }
 
-    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ValidationException.class)
+    public ErrorResponse handleValidationException(final ValidationException e) {
+        return new ErrorResponse(
+                e.getMessage(),
+                "Ошибка валидации данных"
+        );
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(final Throwable e) {
-        return new ErrorResponse("Произошла непредвиденная ошибка.");
+    @ExceptionHandler(InternalServerException.class)
+    public ErrorResponse handleInternalServerException(final InternalServerException e) {
+        return new ErrorResponse(
+                e.getMessage(),
+                "Внутренняя ошибка сервера"
+        );
     }
 
-    private record ErrorResponse(String error) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Throwable.class)
+    public ErrorResponse handleThrowable(final Throwable e) {
+        return new ErrorResponse(
+                "Произошла непредвиденная ошибка: " + e.getMessage(),
+                "Попробуйте повторить запрос позже"
+        );
     }
 }
