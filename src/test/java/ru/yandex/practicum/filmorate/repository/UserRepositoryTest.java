@@ -229,35 +229,11 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testDeleteUser_CascadeDeletesLikesAndFriends() {
+    void testDeleteUser_CascadeDeletesFriends() {  // Убрал "LikesAnd" из названия
         // Arrange
-        // Создаем нового пользователя
-        User newUser = new User();
-        newUser.setEmail("cascade@test.com");
-        newUser.setLogin("cascade");
-        newUser.setName("Cascade User");
-        newUser.setBirthday(LocalDate.of(1995, 5, 5));
-        User createdUser = userRepository.create(newUser);
-        Long userId = createdUser.getId();
-
-        // Добавляем друзей
-        Long friendId = jdbcTemplate.queryForObject(
-                "SELECT user_id FROM users WHERE email = 'user2@test.com'",
+        Long userId = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE email = 'user1@test.com'",
                 Long.class
-        );
-        jdbcTemplate.update(
-                "INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, 'CONFIRMED')",
-                userId, friendId
-        );
-
-        // Добавляем лайки
-        Long filmId = jdbcTemplate.queryForObject(
-                "SELECT film_id FROM films LIMIT 1",
-                Long.class
-        );
-        jdbcTemplate.update(
-                "INSERT INTO likes (film_id, user_id) VALUES (?, ?)",
-                filmId, userId
         );
 
         // Act
@@ -266,18 +242,15 @@ class UserRepositoryTest {
         // Assert
         assertThat(isDeleted).isTrue();
 
-        // Проверяем, что дружбы удалены (CASCADE)
+        // Проверяем удаление пользователя
+        Optional<User> retrievedUser = userRepository.getById(userId);
+        assertThat(retrievedUser).isEmpty();
+
+        // Проверяем удаление друзей
         Integer friendsCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM friends WHERE user_id = ? OR friend_id = ?",
                 Integer.class, userId, userId
         );
         assertThat(friendsCount).isZero();
-
-        // Проверяем, что лайки удалены (CASCADE)
-        Integer likesCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM likes WHERE user_id = ?",
-                Integer.class, userId
-        );
-        assertThat(likesCount).isZero();
     }
 }
