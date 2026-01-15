@@ -29,7 +29,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
                     "FETCH FIRST ? ROWS ONLY";
     private static final String FIND_ALL_LIKED_FILMS =
-            "SELECT * FROM film WHERE film_id IN (SELECT film_id FROM likes WHERE user_id = ?);";
+            "SELECT f.* " +
+                    "FROM films f " +
+                    "JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE l.user_id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
