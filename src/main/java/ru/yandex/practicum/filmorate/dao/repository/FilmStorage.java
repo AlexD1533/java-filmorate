@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.dao.repository;
 
+import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
 
@@ -23,4 +25,6 @@ public interface FilmStorage {
     List<Film> getPopularFilms(int count);
 
     boolean validateId(long id);
+
+    Collection<Film> getLikedFilmsByUserId(long userId);
 }

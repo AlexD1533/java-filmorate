@@ -6,13 +6,13 @@ import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmMapper;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dao.repository.UserRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
+import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +22,7 @@ public class FilmService {
     private final GenreService genreService;
     private final LikeService likeService;
 
+    private final UserRepository userRepository;
 
     private final FilmMapper filmMapper;
 
@@ -75,6 +76,49 @@ public class FilmService {
         film.setGenres(genreService.getGenresIdByFilm(id));
         film.setLikes(likeService.getLikesIdsByFilm(id));
         return film;
+    }
+
+    public Map<Long, Collection<Film>> getLikedFilmsByAllUsers() {
+        List<Long> allUsersIds = userRepository.getAll().stream()
+                .map(User::getId)
+                .toList();
+
+        Map<Long, Collection<Film>> likedFilmsByAllUsers = new HashMap<>();
+        for (Long id : allUsersIds) {
+            likedFilmsByAllUsers.put(id, filmStorage.getLikedFilmsByUserId(id));
+        }
+
+        return likedFilmsByAllUsers;
+
+    }
+
+    public Collection<FilmDto> getRecommendations(long userId) {
+        Collection<Film> userLikedFilms = filmStorage.getLikedFilmsByUserId(userId);
+        Map<Long, Collection<Film>> likedFilmsByAllUsers = getLikedFilmsByAllUsers();
+
+        Set<Film> userLikesSet = new HashSet<>(userLikedFilms);
+
+        Long targetUserId = likedFilmsByAllUsers.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals(userId))
+                .max(Comparator.comparingInt(entry -> {
+                    Set<Film> otherLikesSet = new HashSet<>(entry.getValue());
+                    Set<Film> intesection = new HashSet<>(userLikesSet);
+                    intesection.retainAll(otherLikesSet);
+                    return intesection.size();
+                }))
+                .map(Map.Entry::getKey)
+                .orElseThrow(() -> new NotFoundException("Пересечений не найдено"));
+
+        Collection<Film> targetUserLikedFilms = filmStorage.getLikedFilmsByUserId(targetUserId);
+        Set<Film> targetLikesSet = new HashSet<>(userLikedFilms);
+        //получаем фильмы которые не лайкнул искомый юзер
+
+        targetLikesSet.retainAll(userLikedFilms);
+
+        return targetLikesSet.stream()
+                .map(film -> updateCollections(film, film.getId()))
+                .map(filmMapper::mapToFilmDto)
+                .toList();
     }
 
 }

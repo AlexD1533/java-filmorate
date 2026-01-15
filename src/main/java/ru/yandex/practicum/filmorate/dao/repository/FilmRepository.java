@@ -28,6 +28,8 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "GROUP BY f.film_id, f.name " +
                     "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
                     "FETCH FIRST ? ROWS ONLY";
+    private static final String FIND_ALL_LIKED_FILMS =
+            "SELECT * FROM film WHERE film_id IN (SELECT film_id FROM likes WHERE user_id = ?);";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -88,4 +90,8 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         return existsById(FIND_ID_EXIST, id);
     }
 
+    @Override
+    public Collection<Film> getLikedFilmsByUserId(long userId) {
+        return findMany(FIND_ALL_LIKED_FILMS, userId);
+    }
 }

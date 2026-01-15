@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dao.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dao.dto.user.UserDto;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -22,6 +24,7 @@ import java.util.Collection;
 
 public class UserController {
     private final UserService userService;
+    private final FilmService filmService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -66,5 +69,13 @@ public class UserController {
         UserDto user = userService.getById(id);
         log.info("Найден пользователь: {}", user);
         return user;
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<FilmDto> getRecommendations(@PathVariable long id) {
+        log.info("Пользователь: запрос на получение рекомендации по id={}", id);
+        Collection<FilmDto> recommendations = filmService.getRecommendations(id);
+        log.info("Фильм: запрос на получение всех рекомендаций");
+        return recommendations;
     }
 }
