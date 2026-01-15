@@ -66,7 +66,7 @@ public class UserService {
 
         boolean deleted  = userStorage.deleteUser(id);
         if(!deleted){
-            throw  new InternalServerException("Не удалось удалить пользователя с id="+id);
+            throw  new InternalServerException("Не удалось удалить пользователя с id=" + id);
         }
     }
 }

@@ -77,13 +77,13 @@ public class FilmService {
         film.setLikes(likeService.getLikesIdsByFilm(id));
         return film;
     }
+
+
     public void deleteFilm(long id) {
         getById(id);
-
         boolean deleted = filmStorage.deleteFilm(id);
         if (!deleted) {
-            throw new InternalServerException("Не удалось удалить фильм с id="+id);
+            throw new InternalServerException("Не удалось удалить фильм с id=" + id);
         }
     }
-
 }
