@@ -23,6 +23,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE user_id = ?";
     private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday) VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
+    private static final String DELETE_USER_SQL = "DELETE FROM users WHERE user_id = ?";
 
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -80,6 +81,11 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public boolean validateId(long id) {
         return existsById(FIND_ID_EXIST, id);
+    }
+
+    @Override
+    public boolean deleteUser(long id) {
+        return delete(DELETE_USER_SQL,id);
     }
 }
 

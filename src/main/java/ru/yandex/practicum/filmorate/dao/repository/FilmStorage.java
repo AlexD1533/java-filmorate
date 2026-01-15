@@ -23,4 +23,6 @@ public interface FilmStorage {
     List<Film> getPopularFilms(int count);
 
     boolean validateId(long id);
+
+    boolean deleteFilm(long id);
 }

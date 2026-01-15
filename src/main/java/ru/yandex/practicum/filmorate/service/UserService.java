@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dao.dto.user.UserMapper;
 import ru.yandex.practicum.filmorate.dao.repository.FriendRepository;
 import ru.yandex.practicum.filmorate.dao.repository.UserRepository;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -60,4 +61,12 @@ public class UserService {
         return user;
     }
 
+    public void deleteUser(long id){
+        getById(id);
+
+        boolean deleted  = userStorage.deleteUser(id);
+        if(!deleted){
+            throw  new InternalServerException("Не удалось удалить пользователя с id="+id);
+        }
+    }
 }

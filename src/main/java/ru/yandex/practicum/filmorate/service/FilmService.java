@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmMapper;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
@@ -75,6 +76,14 @@ public class FilmService {
         film.setGenres(genreService.getGenresIdByFilm(id));
         film.setLikes(likeService.getLikesIdsByFilm(id));
         return film;
+    }
+    public void deleteFilm(long id) {
+        getById(id);
+
+        boolean deleted = filmStorage.deleteFilm(id);
+        if (!deleted) {
+            throw new InternalServerException("Не удалось удалить фильм с id="+id);
+        }
     }
 
 }

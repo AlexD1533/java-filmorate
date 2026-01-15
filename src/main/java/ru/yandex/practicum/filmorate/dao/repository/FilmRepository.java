@@ -28,6 +28,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "GROUP BY f.film_id, f.name " +
                     "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
                     "FETCH FIRST ? ROWS ONLY";
+    private static final String DELETE_FILM_SQL = "DELETE FROM films WHERE film_id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -86,6 +87,11 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public boolean validateId(long id) {
         return existsById(FIND_ID_EXIST, id);
+    }
+
+    @Override
+    public boolean deleteFilm(long id) {
+        return delete(DELETE_FILM_SQL,id);
     }
 
 }
