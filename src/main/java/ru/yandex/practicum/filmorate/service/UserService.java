@@ -61,12 +61,11 @@ public class UserService {
         return user;
     }
 
-    public void deleteUser(long id){
+    public void deleteUser(long id) {  // ← пробел перед {
         getById(id);
-
-        boolean deleted  = userStorage.deleteUser(id);
-        if(!deleted){
-            throw  new InternalServerException("Не удалось удалить пользователя с id=" + id);
+        boolean deleted = userStorage.deleteUser(id);
+        if (!deleted) {  // ← пробел после if и перед {
+            throw new InternalServerException("Не удалось удалить пользователя с id=" + id);
         }
     }
 }
