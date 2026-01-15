@@ -195,4 +195,89 @@ class UserRepositoryTest {
         assertThat(userRepository.validateId(userId)).isTrue();
         assertThat(userRepository.validateId(999L)).isFalse();
     }
+
+    @Test
+    void testDeleteUser() {
+        // Arrange - получим ID существующего пользователя
+        Long userId = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE email = 'user1@test.com'",
+                Long.class
+        );
+
+        // Act
+        boolean isDeleted = userRepository.deleteUser(userId);
+
+        // Assert
+        assertThat(isDeleted).isTrue();
+
+        // Проверяем, что пользователь действительно удален из БД
+        Optional<User> retrievedUser = userRepository.getById(userId);
+        assertThat(retrievedUser).isEmpty();
+
+        // Проверяем, что остальные пользователи остались
+        Collection<User> remainingUsers = userRepository.getAll();
+        assertThat(remainingUsers).hasSize(2);
+    }
+
+    @Test
+    void testDeleteUser_WhenNotFound() {
+        // Act
+        boolean isDeleted = userRepository.deleteUser(999L);
+
+        // Assert
+        assertThat(isDeleted).isFalse();
+    }
+
+    @Test
+    void testDeleteUser_CascadeDeletesLikesAndFriends() {
+        // Arrange
+        // Создаем нового пользователя
+        User newUser = new User();
+        newUser.setEmail("cascade@test.com");
+        newUser.setLogin("cascade");
+        newUser.setName("Cascade User");
+        newUser.setBirthday(LocalDate.of(1995, 5, 5));
+        User createdUser = userRepository.create(newUser);
+        Long userId = createdUser.getId();
+
+        // Добавляем друзей
+        Long friendId = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE email = 'user2@test.com'",
+                Long.class
+        );
+        jdbcTemplate.update(
+                "INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, 'CONFIRMED')",
+                userId, friendId
+        );
+
+        // Добавляем лайки
+        Long filmId = jdbcTemplate.queryForObject(
+                "SELECT film_id FROM films LIMIT 1",
+                Long.class
+        );
+        jdbcTemplate.update(
+                "INSERT INTO likes (film_id, user_id) VALUES (?, ?)",
+                filmId, userId
+        );
+
+        // Act
+        boolean isDeleted = userRepository.deleteUser(userId);
+
+        // Assert
+        assertThat(isDeleted).isTrue();
+
+        // Проверяем, что дружбы удалены (CASCADE)
+        Integer friendsCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM friends WHERE user_id = ? OR friend_id = ?",
+                Integer.class, userId, userId
+        );
+        assertThat(friendsCount).isZero();
+
+        // Проверяем, что лайки удалены (CASCADE)
+        Integer likesCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE user_id = ?",
+                Integer.class, userId
+        );
+        assertThat(likesCount).isZero();
+    }
 }
