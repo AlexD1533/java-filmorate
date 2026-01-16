@@ -23,6 +23,5 @@ public interface FilmStorage {
     List<Film> getPopularFilms(int count);
 
     boolean validateId(long id);
-    
     List<Film> getCommonFilms(long userId, long friendId);
 }
