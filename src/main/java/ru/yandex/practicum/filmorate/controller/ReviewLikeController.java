@@ -28,7 +28,6 @@ public class ReviewLikeController {
     }
 
     @DeleteMapping("/like/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeLike(@PathVariable Long reviewId,
                            @PathVariable Long userId) {
         log.info("DELETE /reviews/{}/like/{} - удаление лайка", reviewId, userId);

@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.repository.ReviewLikeRepository;
+import ru.yandex.practicum.filmorate.dao.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.ReviewLike;
 
 import java.util.Optional;
@@ -15,11 +17,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReviewLikeService {
     private final ReviewLikeRepository reviewLikeRepository;
-    private final ReviewService reviewService;
+    private final ReviewRepository reviewRepository;
     private final UserService userService;
 
     public void addReaction(Long reviewId, Long userId, boolean isLike) {
-        reviewService.getReviewById(reviewId);
+        reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Отзыв с ID=" + reviewId + " не найден"));
         userService.getById(userId);
 
         Optional<ReviewLike> existingReactionOpt = reviewLikeRepository.findByReviewIdAndUserId(reviewId, userId);
@@ -33,7 +36,6 @@ public class ReviewLikeService {
                 throw new DuplicatedDataException(
                         "Пользователь " + userId + " уже поставил " + reactionType + " отзыву " + reviewId);
             } else {
-                // Меняем реакцию на противоположную
                 updateReaction(reviewId, userId, isLike);
                 String from = existingIsLike ? "лайк" : "дизлайк";
                 String to = isLike ? "лайк" : "дизлайк";
@@ -42,7 +44,6 @@ public class ReviewLikeService {
             }
         }
 
-        // Добавляем новую реакцию
         ReviewLike reviewLike = new ReviewLike(reviewId, userId, isLike);
         reviewLikeRepository.save(reviewLike);
         updateReviewUseful(reviewId);
@@ -82,7 +83,6 @@ public class ReviewLikeService {
 
         reviewLikeRepository.delete(reviewId, userId);
 
-        // Обновляем useful в отзыве
         updateReviewUseful(reviewId);
     }
 
@@ -90,7 +90,6 @@ public class ReviewLikeService {
         ReviewLike reviewLike = new ReviewLike(reviewId, userId, newIsLike);
         reviewLikeRepository.update(reviewLike);
 
-        // Обновляем useful в отзыве
         updateReviewUseful(reviewId);
     }
 
@@ -105,7 +104,6 @@ public class ReviewLikeService {
         reviewLikeRepository.updateReviewUseful(reviewId, useful);
     }
 
-    // Дополнительный метод для проверки реакции пользователя
     public Optional<Boolean> getUserReaction(Long reviewId, Long userId) {
         return reviewLikeRepository.findByReviewIdAndUserId(reviewId, userId)
                 .map(ReviewLike::getIsLike);

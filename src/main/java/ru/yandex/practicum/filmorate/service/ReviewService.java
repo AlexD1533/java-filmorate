@@ -25,9 +25,8 @@ public class ReviewService {
     private final ReviewLikeService reviewLikeService;
 
     public ReviewDto createReview(NewReviewRequest request) {
-        // Проверяем существование пользователя и фильма
-        userService.getById(request.getUserId()); // выбросит NotFoundException если не найден
-        filmService.getById(request.getFilmId()); // выбросит NotFoundException если не найден
+        userService.getById(request.getUserId());
+        filmService.getById(request.getFilmId());
 
         Review review = reviewMapper.mapToReview(request);
         Review savedReview = reviewRepository.save(review);
@@ -50,20 +49,9 @@ public class ReviewService {
         return reviewMapper.mapToReviewDto(savedReview);
     }
 
-    public ReviewDto updateReview(Long reviewId, UpdateReviewRequest request) {
-        Review existingReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new NotFoundException("Отзыв с ID=" + reviewId + " не найден"));
-
-        Review updatedReview = reviewMapper.updateReviewFields(existingReview, request);
-        Review savedReview = reviewRepository.update(updatedReview);
-
-        log.info("Обновлен отзыв ID={}", savedReview.getReviewId());
-
-        return reviewMapper.mapToReviewDto(savedReview);
-    }
 
     public void deleteReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
+        reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв с ID=" + reviewId + " не найден"));
 
         reviewRepository.delete(reviewId);
@@ -75,19 +63,16 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв с ID=" + reviewId + " не найден"));
 
-        // Обновляем useful на основе актуальных лайков/дизлайков
         review.setUseful(reviewLikeService.getUseful(reviewId));
 
         return reviewMapper.mapToReviewDto(review);
     }
 
     public List<ReviewDto> getReviewsByFilmId(Long filmId, Integer count) {
-        // Проверяем существование фильма
         filmService.getById(filmId);
 
         List<Review> reviews = reviewRepository.findByFilmId(filmId, count);
 
-        // Обновляем useful для каждого отзыва
         reviews.forEach(review ->
                 review.setUseful(reviewLikeService.getUseful(review.getReviewId())));
 
@@ -99,7 +84,6 @@ public class ReviewService {
     public List<ReviewDto> getAllReviews(Integer count) {
         List<Review> reviews = reviewRepository.findAll(count);
 
-        // Обновляем useful для каждого отзыва
         reviews.forEach(review ->
                 review.setUseful(reviewLikeService.getUseful(review.getReviewId())));
 

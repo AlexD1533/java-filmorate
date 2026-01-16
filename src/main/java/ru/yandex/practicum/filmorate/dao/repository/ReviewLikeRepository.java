@@ -7,9 +7,6 @@ import ru.yandex.practicum.filmorate.dao.repository.mappers.ReviewLikeRowMapper;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.ReviewLike;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
 import java.util.Optional;
 
 @Repository

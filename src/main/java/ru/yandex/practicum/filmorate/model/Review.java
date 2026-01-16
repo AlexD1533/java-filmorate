@@ -19,6 +19,4 @@ public class Review {
     private long userId;
     private long filmId;
     private long useful;
-    private LocalDateTime creationDate = LocalDateTime.now();
-
 }
