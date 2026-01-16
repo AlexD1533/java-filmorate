@@ -1,5 +1,4 @@
-
-        package ru.yandex.practicum.filmorate.repository;
+package ru.yandex.practicum.filmorate.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -163,35 +162,53 @@ class FilmRepositoryTest {
 
     @Test
     void testGetPopularFilms() {
-        // Сначала получаем ID существующих фильмов
-        List<Film> allFilms = (List<Film>) filmRepository.getAll();
-        Long filmId1 = allFilms.get(0).getId();
-        Long filmId2 = allFilms.get(1).getId();
-
-        // Arrange - добавляем пользователей и лайки для фильмов
+        // --- Arrange ---
         jdbcTemplate.update("DELETE FROM likes");
+        jdbcTemplate.update("DELETE FROM films");
         jdbcTemplate.update("DELETE FROM users");
-        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES ('test@test.com', 'test', 'Test', '1990-01-01')");
-        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES ('test2@test.com', 'test2', 'Test2', '1990-01-01')");
 
-        // Получаем ID пользователей
-        Long userId1 = jdbcTemplate.queryForObject("SELECT user_id FROM users WHERE email = 'test@test.com'", Long.class);
-        Long userId2 = jdbcTemplate.queryForObject("SELECT user_id FROM users WHERE email = 'test2@test.com'", Long.class);
+        // users
+        jdbcTemplate.update("""
+        INSERT INTO users (email, login, name, birthday)
+        VALUES 
+        ('test@test.com', 'test', 'Test', '1990-01-01'),
+        ('test2@test.com', 'test2', 'Test2', '1990-01-01')
+    """);
 
-        // Фильм 1 получает 2 лайка
+        Long userId1 = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE login = 'test'", Long.class);
+        Long userId2 = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE login = 'test2'", Long.class);
+
+        // films (MPA обязателен!)
+        jdbcTemplate.update("""
+        INSERT INTO films (name, description, release_date, duration, rating_id)
+        VALUES 
+        ('Film 1', 'Desc', '2000-01-01', 120, 1),
+        ('Film 2', 'Desc', '2001-01-01', 120, 1)
+    """);
+
+        Long filmId1 = jdbcTemplate.queryForObject(
+                "SELECT film_id FROM films WHERE name = 'Film 1'", Long.class);
+        Long filmId2 = jdbcTemplate.queryForObject(
+                "SELECT film_id FROM films WHERE name = 'Film 2'", Long.class);
+
+        // likes
         jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (?, ?)", filmId1, userId1);
         jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (?, ?)", filmId1, userId2);
-
-        // Фильм 2 получает 1 лайк
         jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (?, ?)", filmId2, userId1);
 
-        // Act
-        List<Film> popularFilms = filmRepository.getPopularFilms(2);
+        // --- Act ---
+        List<Film> popularFilms = filmRepository.getPopularFilms(
+                null,   // genreId
+                null,   // year
+                2       // count
+        );
 
-        // Assert
+        // --- Assert ---
         assertThat(popularFilms).hasSize(2);
-        assertThat(popularFilms.get(0).getId()).isEqualTo(filmId1); // Самый популярный (2 лайка)
-        assertThat(popularFilms.get(1).getId()).isEqualTo(filmId2); // Второй по популярности (1 лайк)
+        assertThat(popularFilms.get(0).getId()).isEqualTo(filmId1);
+        assertThat(popularFilms.get(1).getId()).isEqualTo(filmId2);
     }
 
     @Test
