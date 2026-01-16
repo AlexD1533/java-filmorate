@@ -88,4 +88,15 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         return existsById(FIND_ID_EXIST, id);
     }
 
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        String sql =
+                "SELECT f.* FROM films f " +
+                "INNER JOIN likes l1 ON f.film_id = l1.film_id AND l1.user_id = ? " +
+                "INNER JOIN likes l2 ON f.film_id = l2.film_id AND l2.user_id = ? " +
+                "LEFT JOIN likes l_count ON f.film_id = l_count.film_id " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l_count.user_id) DESC";
+
+        return findMany(sql, userId, friendId);
+    }
 }
