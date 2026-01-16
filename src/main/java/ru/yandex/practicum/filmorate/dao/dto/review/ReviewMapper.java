@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +17,7 @@ public final class ReviewMapper {
         review.setUserId(request.getUserId());
         review.setFilmId(request.getFilmId());
         review.setUseful(0L);
-        review.setUserLikes(new HashSet<>());
+        review.setCreationDate(LocalDateTime.now());
         return review;
     }
 
@@ -30,16 +29,15 @@ public final class ReviewMapper {
         dto.setUserId(review.getUserId());
         dto.setFilmId(review.getFilmId());
         dto.setUseful(review.getUseful());
-        dto.setUserLikes(review.getUserLikes() != null ? review.getUserLikes() : new HashSet<>());
-        dto.setCreationDate(LocalDateTime.now());
+        dto.setCreationDate(review.getCreationDate());
         return dto;
     }
 
     public Review updateReviewFields(Review review, UpdateReviewRequest request) {
-        if (request.getContent() != null) {
+        if (request.hasContent()) {
             review.setContent(request.getContent());
         }
-        if (request.getIsPositive() != null) {
+        if (request.hasIsPositive()) {
             review.setPositive(request.getIsPositive());
         }
         return review;
