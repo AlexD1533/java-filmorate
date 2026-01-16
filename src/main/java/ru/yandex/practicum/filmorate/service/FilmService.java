@@ -7,8 +7,10 @@ import ru.yandex.practicum.filmorate.dao.dto.film.FilmMapper;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
+import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +26,7 @@ public class FilmService {
 
 
     private final FilmMapper filmMapper;
+    private final Validation validation;
 
     public FilmDto create(NewFilmRequest request) {
 
@@ -77,4 +80,18 @@ public class FilmService {
         return film;
     }
 
+    public List<FilmDto> getCommonFilms(long userId, long friendId) {
+        validation.validateUserExists(userId);
+        validation.validateUserExists(friendId);
+
+        if (userId == friendId) {
+            throw new ValidationException("ID пользователей должны быть разным");
+        }
+
+        List<Film> commonFilms = filmStorage.getCommonFilms(userId, friendId);
+        return commonFilms.stream()
+                .map(film -> updateCollections(film, film.getId()))
+                .map(filmMapper::mapToFilmDto)
+                .toList();
+    }
 }
