@@ -64,8 +64,8 @@ public class FilmService {
 
     }
 
-    public List<FilmDto> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count).stream()
+    public List<FilmDto> getPopularFilms(Integer genreId, Integer year, int count) {
+        return filmStorage.getPopularFilms(genreId, year, count).stream()
                 .map(film -> updateCollections(film, film.getId()))
                 .map(filmMapper::mapToFilmDto)
                 .toList();
