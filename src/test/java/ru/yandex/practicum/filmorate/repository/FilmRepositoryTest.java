@@ -170,7 +170,7 @@ class FilmRepositoryTest {
         // users
         jdbcTemplate.update("""
         INSERT INTO users (email, login, name, birthday)
-        VALUES 
+        VALUES
         ('test@test.com', 'test', 'Test', '1990-01-01'),
         ('test2@test.com', 'test2', 'Test2', '1990-01-01')
     """);
@@ -183,7 +183,7 @@ class FilmRepositoryTest {
         // films (MPA обязателен!)
         jdbcTemplate.update("""
         INSERT INTO films (name, description, release_date, duration, rating_id)
-        VALUES 
+        VALUES
         ('Film 1', 'Desc', '2000-01-01', 120, 1),
         ('Film 2', 'Desc', '2001-01-01', 120, 1)
     """);
