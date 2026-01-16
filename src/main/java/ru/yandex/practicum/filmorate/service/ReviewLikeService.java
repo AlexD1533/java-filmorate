@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.dao.repository.ReviewLikeRepository;
 import ru.yandex.practicum.filmorate.dao.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.ReviewLike;
 
 import java.util.Optional;
