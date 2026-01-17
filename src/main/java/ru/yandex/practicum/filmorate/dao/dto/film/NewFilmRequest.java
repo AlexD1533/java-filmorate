@@ -34,11 +34,12 @@ public class NewFilmRequest {
     private Integer duration;
 
     @NotNull(message = "Рейтинг MPA обязателен")
-
     @Valid
     private Long mpa;
 
     private Set<Long> genres = new HashSet<>();
+
+    private Set<Long> directors = new HashSet<>();
 
     @JsonSetter("genres")
     public void setGenresFromMaps(Set<Map<String, Long>> genreMaps) {
@@ -48,7 +49,16 @@ public class NewFilmRequest {
                     .filter(id -> id != null)
                     .collect(Collectors.toSet());
         }
+    }
 
+    @JsonSetter("director")
+    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps) {
+        if (directorMaps != null) {
+            this.directors = directorMaps.stream()
+                    .map(map -> map.get("id"))
+                    .filter(id -> id != null)
+                    .collect(Collectors.toSet());
+        }
     }
 
     @JsonSetter("mpa")

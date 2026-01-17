@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -16,7 +18,7 @@ public final class FilmMapper {
 
     private final MpaService mpaService;
     private final GenreService genreService;
-
+    private final DirectorService directorService;
 
     public Film mapToFilm(NewFilmRequest request) {
         Film film = new Film();
@@ -26,6 +28,7 @@ public final class FilmMapper {
         film.setDuration(request.getDuration());
         film.setMpa(request.getMpa());
         film.setGenres(request.getGenres() != null ? request.getGenres() : new HashSet<>());
+        film.setDirectors(request.getDirectors() != null ? request.getDirectors() : new HashSet<>());
         film.setLikes(new HashSet<>());
         return film;
     }
@@ -40,8 +43,10 @@ public final class FilmMapper {
         dto.setMpa(mpaService.getMpaById(film.getMpa()));
 
         Set<Genre> genres = genreService.getGenresByFilmId(film.getId());
-
         dto.setGenres(genres);
+
+        Set<Director> directors = directorService.getDirectorsByFilmId(film.getId());
+        dto.setDirectors(directors);
 
         dto.setLikes(film.getLikes());
         dto.setCreationDate(LocalDate.now());
@@ -66,6 +71,9 @@ public final class FilmMapper {
         }
         if (request.hasGenres()) {
             film.setGenres(request.getGenres());
+        }
+        if (request.hasDirectors()) {
+            film.setDirectors(request.getDirectors());
         }
         return film;
     }

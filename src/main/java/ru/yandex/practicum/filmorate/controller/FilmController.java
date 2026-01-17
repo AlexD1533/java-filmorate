@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validation.Validation;
 
@@ -70,5 +71,22 @@ public class FilmController {
         List<FilmDto> popularFilms = filmService.getPopularFilms(count);
         log.info("Найдено {} популярных фильмов", popularFilms.size());
         return popularFilms;
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getFilmsByDirector(
+            @PathVariable Long directorId,
+            @RequestParam(defaultValue = "year") String sortBy) {
+
+        log.info("GET /films/director/{}?sortBy={} - фильмы режиссера", directorId, sortBy);
+
+        // Проверяем корректность параметра sortBy
+        if (!"year".equals(sortBy) && !"likes".equals(sortBy)) {
+            throw new ValidationException("Параметр sortBy должен быть 'year' или 'likes'");
+        }
+
+        List<FilmDto> films = filmService.getFilmsByDirector(directorId, sortBy);
+        log.info("Найдено {} фильмов режиссера с id={}", films.size(), directorId);
+        return films;
     }
 }

@@ -6,10 +6,13 @@ import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmMapper;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dao.repository.mappers.DirectorRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -21,9 +24,28 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final LikeService likeService;
-
+    private final DirectorService directorService;
+    private final DirectorRepository directorRepository;
 
     private final FilmMapper filmMapper;
+
+    public List<FilmDto> getFilmsByDirector(Long directorId, String sortBy) {
+        // Проверить что режиссер существует
+        directorService.getDirectorById(directorId);
+
+        List<Long> filmIds;
+        if ("likes".equals(sortBy)) {
+            filmIds = directorRepository.findFilmIdsByDirectorSortedByLikes(directorId);
+        } else if ("year".equals(sortBy)) {
+            filmIds = directorRepository.findFilmIdsByDirectorSortedByYear(directorId);
+        } else {
+            throw new ValidationException("Параметр sortBy должен быть 'year' или 'likes'");
+        }
+
+        return filmIds.stream()
+                .map(this::getById)
+                .collect(Collectors.toList());
+    }
 
     public FilmDto create(NewFilmRequest request) {
 
@@ -32,6 +54,12 @@ public class FilmService {
         Set<Long> genres = request.getGenres();
         film.setGenres(genres);
         genreService.saveByFilm(film.getId(), genres);
+
+        Set<Long> directors = request.getDirectors();
+        if (directors != null && !directors.isEmpty()) {
+            film.setDirectors(directors);
+            directorService.linkFilmWithDirectors(film.getId(), new ArrayList<>(directors));
+        }
 
         return filmMapper.mapToFilmDto(film);
     }
@@ -44,8 +72,14 @@ public class FilmService {
         updatedFilm = filmStorage.update(updatedFilm);
 
         Set<Long> genres = request.getGenres();
-
         genreService.saveByFilm(updatedFilm.getId(), genres);
+
+
+        if (request.hasDirectors()) {
+            Set<Long> directors = request.getDirectors();
+            updatedFilm.setDirectors(directors);
+            directorService.linkFilmWithDirectors(updatedFilm.getId(), new ArrayList<>(directors));
+        }
 
         return filmMapper.mapToFilmDto(updatedFilm);
     }
