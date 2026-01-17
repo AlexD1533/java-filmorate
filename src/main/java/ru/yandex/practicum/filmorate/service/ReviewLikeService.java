@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.dao.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.ReviewLike;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
 
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ public class ReviewLikeService {
     private final ReviewLikeRepository reviewLikeRepository;
     private final ReviewRepository reviewRepository;
     private final UserService userService;
+    private final EventService eventService;
 
     public void addReaction(Long reviewId, Long userId, boolean isLike) {
         reviewRepository.findById(reviewId)
@@ -53,6 +56,13 @@ public class ReviewLikeService {
 
     public void addLike(Long reviewId, Long userId) {
         addReaction(reviewId, userId, true);
+
+        eventService.addEvent(
+                userId,
+                EventType.LIKE,
+                EventOperation.ADD,
+                reviewId
+        );
     }
 
     public void addDislike(Long reviewId, Long userId) {
@@ -61,6 +71,14 @@ public class ReviewLikeService {
 
     public void removeLike(Long reviewId, Long userId) {
         removeReaction(reviewId, userId, true);
+
+        eventService.addEvent(
+                userId,
+                EventType.LIKE,
+                EventOperation.REMOVE,
+                reviewId
+        );
+
         log.info("Пользователь {} удалил лайк с отзыва {}", userId, reviewId);
     }
 

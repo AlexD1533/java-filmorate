@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.dao.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.dao.repository.FriendRepository;
 import ru.yandex.practicum.filmorate.dao.repository.UserRepository;
 import ru.yandex.practicum.filmorate.model.Friend;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
 import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class FriendsService {
     private final FriendRepository friendRepository;
     private final UserRepository userDbStorage;
     private final Validation validation;
+    private final EventService eventService;
 
     public FriendDto addFriend(long userId, long friendId) {
         validation.validateUserExists(userId);
@@ -37,6 +40,13 @@ public class FriendsService {
         friend.setUserId(userId);
         friend.setFriendId(friendId);
         friend.setStatus("NOT_CONFIRMED");
+
+        eventService.addEvent(
+                userId,
+                EventType.FRIEND,
+                EventOperation.ADD,
+                friendId
+        );
 
         return FriendMapper.mapToFriendDto(friendRepository.save(friend));
     }
@@ -59,6 +69,13 @@ public class FriendsService {
         }
 
         log.info("Пользователь {} удалил друга {}", userId, friendId);
+
+        eventService.addEvent(
+                userId,
+                EventType.FRIEND,
+                EventOperation.REMOVE,
+                friendId
+        );
     }
 
     public List<UserDto> getFriends(long userId) {

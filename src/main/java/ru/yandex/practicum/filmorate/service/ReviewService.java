@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.dao.dto.review.ReviewMapper;
 import ru.yandex.practicum.filmorate.dao.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ public class ReviewService {
     private final UserService userService;
     private final FilmService filmService;
     private final ReviewLikeService reviewLikeService;
+    private final EventService eventService;
 
     public ReviewDto createReview(NewReviewRequest request) {
         userService.getById(request.getUserId());
@@ -30,6 +33,13 @@ public class ReviewService {
 
         Review review = reviewMapper.mapToReview(request);
         Review savedReview = reviewRepository.save(review);
+
+        eventService.addEvent(
+                savedReview.getUserId(),
+                EventType.REVIEW,
+                EventOperation.ADD,
+                savedReview.getReviewId()
+        );
 
         log.info("Создан отзыв ID={} для фильма ID={} от пользователя ID={}",
                 savedReview.getReviewId(), savedReview.getFilmId(), savedReview.getUserId());
@@ -44,6 +54,13 @@ public class ReviewService {
         Review updatedReview = reviewMapper.updateReviewFields(existingReview, request);
         Review savedReview = reviewRepository.update(updatedReview);
 
+        eventService.addEvent(
+                savedReview.getUserId(),
+                EventType.REVIEW,
+                EventOperation.UPDATE,
+                savedReview.getReviewId()
+        );
+
         log.info("Обновлен отзыв ID={}", savedReview.getReviewId());
 
         return reviewMapper.mapToReviewDto(savedReview);
@@ -51,10 +68,17 @@ public class ReviewService {
 
 
     public void deleteReview(Long reviewId) {
-        reviewRepository.findById(reviewId)
+        Review deletedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв с ID=" + reviewId + " не найден"));
 
         reviewRepository.delete(reviewId);
+
+        eventService.addEvent(
+                deletedReview.getUserId(),
+                EventType.REVIEW,
+                EventOperation.REMOVE,
+                reviewId
+        );
 
         log.info("Удален отзыв ID={}", reviewId);
     }
