@@ -68,14 +68,14 @@ public class FriendsService {
             throw new IllegalArgumentException("Не удалось удалить дружбу");
         }
 
-        log.info("Пользователь {} удалил друга {}", userId, friendId);
-
         eventService.addEvent(
                 userId,
                 EventType.FRIEND,
                 EventOperation.REMOVE,
                 friendId
         );
+
+        log.info("Пользователь {} удалил друга {}", userId, friendId);
     }
 
     public List<UserDto> getFriends(long userId) {
