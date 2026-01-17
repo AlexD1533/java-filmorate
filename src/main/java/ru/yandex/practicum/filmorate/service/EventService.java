@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.dao.dto.event.EventMapper;
-import ru.yandex.practicum.filmorate.dao.repository.EventStorage;
+import ru.yandex.practicum.filmorate.dao.repository.EventRepository;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.enums.EventOperation;
 import ru.yandex.practicum.filmorate.model.enums.EventType;
@@ -16,8 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
 
-    private final EventStorage eventStorage;
-    private final UserService userService;
+    private final EventRepository eventRepository;
     private final EventMapper eventMapper;
 
     public void addEvent(long userId,
@@ -33,11 +32,11 @@ public class EventService {
                 .entityId(entityId)
                 .build();
 
-        eventStorage.addEvent(event);
+        eventRepository.addEvent(event);
     }
 
     public List<EventDto> getUserFeed(long userId) {
-        return eventStorage.getUserFeed(userId).stream()
+        return eventRepository.getUserFeed(userId).stream()
                 .map(eventMapper::toDto)
                 .toList();
     }
