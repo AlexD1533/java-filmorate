@@ -80,6 +80,21 @@ CREATE TABLE IF NOT EXISTS review_likes (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+-- Создание таблицы directors
+CREATE TABLE IF NOT EXISTS directors (
+     director_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+     name VARCHAR(255) NOT NULL
+    );
+
+-- Создание таблицы film_directors (связь многие-ко-многим)
+CREATE TABLE IF NOT EXISTS film_directors (
+        film_id INTEGER NOT NULL,
+        director_id INTEGER NOT NULL,
+        PRIMARY KEY (film_id, director_id),
+    FOREIGN KEY (film_id) REFERENCES films(film_id) ON DELETE CASCADE,
+    FOREIGN KEY (director_id) REFERENCES directors(director_id) ON DELETE CASCADE
+    );
+
 
 -- Создание индексов для оптимизации запросов
 CREATE INDEX IF NOT EXISTS idx_films_rating ON films(rating_id);
@@ -89,6 +104,9 @@ CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_likes_film ON likes(film_id);
 CREATE INDEX IF NOT EXISTS idx_friends_user ON friends(user_id);
 CREATE INDEX IF NOT EXISTS idx_friends_friend ON friends(friend_id);
+CREATE INDEX IF NOT EXISTS idx_film_directors_film ON film_directors(film_id);
+CREATE INDEX IF NOT EXISTS idx_film_directors_director ON film_directors(director_id);
+
 
 -- Вставка предопределенных данных для MPA рейтингов
 MERGE INTO mpa_rating (rating_id, name) VALUES
