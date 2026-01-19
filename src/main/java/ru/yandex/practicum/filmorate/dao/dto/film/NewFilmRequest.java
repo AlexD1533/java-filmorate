@@ -14,8 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-public class NewFilmRequest
-{
+public class NewFilmRequest {
     @NotBlank(message = "Название не может быть пустым")
     private String name;
 
@@ -27,10 +26,8 @@ public class NewFilmRequest
     private LocalDate releaseDate;
 
     @AssertTrue(message = "Дата релиза не может быть раньше 28 декабря 1895 года")
-    public boolean isValidReleaseDate()
-    {
-        if (releaseDate == null) return true;
-        return !releaseDate.isBefore(LocalDate.of(1895, 12, 28));
+    public boolean isValidReleaseDate() {
+        return releaseDate == null || !releaseDate.isBefore(LocalDate.of(1895, 12, 28));
     }
 
     @Positive(message = "Продолжительность должна быть положительной")
@@ -44,33 +41,23 @@ public class NewFilmRequest
     private Set<Long> directors = new HashSet<>();
 
     @JsonSetter("genres")
-    public void setGenresFromMaps(Set<Map<String, Long>> genreMaps)
-    {
-        if (genreMaps != null)
-        {
-            this.genres = genreMaps.stream()
-                    .map(map -> map.get("id"))
+    public void setGenresFromMaps(Set<Map<String, Long>> genreMaps) {
+        if (genreMaps != null) {
+            this.genres = genreMaps.stream().map(map -> map.get("id"))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         }
     }
 
     @JsonSetter("mpa")
-    public void setMpaToLong(MpaRating mpa)
-    {
-        if (mpa != null)
-        {
-            this.mpa = mpa.getId();
-        }
+    public void setMpaToLong(MpaRating mpa) {
+        if (mpa != null) this.mpa = mpa.getId();
     }
 
     @JsonSetter("directors")
-    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps)
-    {
-        if (directorMaps != null)
-        {
-            this.directors = directorMaps.stream()
-                    .map(map -> map.get("id"))
+    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps) {
+        if (directorMaps != null) {
+            this.directors = directorMaps.stream().map(map -> map.get("id"))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         }

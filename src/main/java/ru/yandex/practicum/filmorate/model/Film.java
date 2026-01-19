@@ -13,8 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class Film
-{
+public class Film {
     private long id;
     private String name;
     private String description;
@@ -25,13 +24,8 @@ public class Film
     private Set<Long> likes = new HashSet<>();
     private Set<Long> directors = new HashSet<>();
 
-    public Set<Long> getDirectors()
-    {
-        return directors;
-    }
-
-    public void setDirectors(Set<Long> directors)
-    {
+    public Set<Long> getDirectors() { return directors; }
+    public void setDirectors(Set<Long> directors) {
         this.directors = directors;
     }
 }
