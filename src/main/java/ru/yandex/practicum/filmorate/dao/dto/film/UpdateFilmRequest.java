@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-public class UpdateFilmRequest {
+public class UpdateFilmRequest
+{
     @NotNull(message = "ID фильма обязателен")
     @Positive(message = "ID должен быть положительным")
     private Long id;
@@ -35,11 +36,13 @@ public class UpdateFilmRequest {
     private Long mpa;
 
     private Set<Long> genres = new HashSet<>();
-    private Set<Long> directors = new HashSet<>(); // <- добавлено поле
+    private Set<Long> directors = new HashSet<>();
 
     @JsonSetter("genres")
-    public void setGenresFromMaps(Set<Map<String, Long>> genreMaps) {
-        if (genreMaps != null) {
+    public void setGenresFromMaps(Set<Map<String, Long>> genreMaps)
+    {
+        if (genreMaps != null)
+        {
             this.genres = genreMaps.stream()
                     .map(map -> map.get("id"))
                     .filter(id -> id != null)
@@ -48,15 +51,19 @@ public class UpdateFilmRequest {
     }
 
     @JsonSetter("mpa")
-    public void setMpaToLong(MpaRating mpa) {
-        if (mpa != null) {
+    public void setMpaToLong(MpaRating mpa)
+    {
+        if (mpa != null)
+        {
             this.mpa = mpa.getId();
         }
     }
 
     @JsonSetter("directors")
-    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps) {
-        if (directorMaps != null) {
+    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps)
+    {
+        if (directorMaps != null)
+        {
             this.directors = directorMaps.stream()
                     .map(map -> map.get("id"))
                     .filter(id -> id != null)
@@ -64,31 +71,38 @@ public class UpdateFilmRequest {
         }
     }
 
-    public boolean hasName() {
+    public boolean hasName()
+    {
         return name != null && !name.isBlank();
     }
 
-    public boolean hasDescription() {
+    public boolean hasDescription()
+    {
         return description != null && !description.isBlank();
     }
 
-    public boolean hasReleaseDate() {
+    public boolean hasReleaseDate()
+    {
         return releaseDate != null;
     }
 
-    public boolean hasDuration() {
+    public boolean hasDuration()
+    {
         return duration != null;
     }
 
-    public boolean hasMpa() {
+    public boolean hasMpa()
+    {
         return mpa != null;
     }
 
-    public boolean hasGenres() {
+    public boolean hasGenres()
+    {
         return genres != null && !genres.isEmpty();
     }
 
-    public boolean hasDirectors() { // <- метод для проверки наличия режиссёров
+    public boolean hasDirectors()
+    {
         return directors != null && !directors.isEmpty();
     }
 }
