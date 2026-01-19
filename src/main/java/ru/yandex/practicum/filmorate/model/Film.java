@@ -24,7 +24,10 @@ public class Film {
     private Set<Long> likes = new HashSet<>();
     private Set<Long> directors = new HashSet<>();
 
-    public Set<Long> getDirectors() { return directors; }
+    public Set<Long> getDirectors() {
+        return directors;
+    }
+
     public void setDirectors(Set<Long> directors) {
         this.directors = directors;
     }
