@@ -29,6 +29,25 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
                     "FETCH FIRST ? ROWS ONLY";
 
+    private static final String FIND_BY_DIRECTOR_SORTED_BY_YEAR_SQL =
+            "SELECT f.*, m.name as mpa_name " +
+                    "FROM films f " +
+                    "LEFT JOIN mpa_ratings m ON f.mpa_id = m.mpa_id " +
+                    "WHERE f.film_id IN (SELECT film_id FROM film_directors WHERE director_id = ?) " +
+                    "ORDER BY f.release_date";
+
+    private static final String FIND_BY_DIRECTOR_SORTED_BY_LIKES_SQL =
+            "SELECT f.*, m.name as mpa_name, " +
+                    "COUNT(DISTINCT l.user_id) as likes_count " +
+                    "FROM films f " +
+                    "LEFT JOIN mpa_ratings m ON f.mpa_id = m.mpa_id " +
+                    "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE f.film_id IN (SELECT film_id FROM film_directors WHERE director_id = ?) " +
+                    "GROUP BY f.film_id, m.name " +
+                    "ORDER BY likes_count DESC";
+
+
+
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
@@ -126,4 +145,17 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
         return findMany(sql, directorId);
     }
+
+@Override
+public List<Film> findByDirectorIdSorted(Long directorId, String sortBy) {
+        if ("year".equals(sortBy)) {
+            return findMany(FIND_BY_DIRECTOR_SORTED_BY_YEAR_SQL, directorId);
+        } else if ("likes".equals(sortBy)) {
+            return findMany(FIND_BY_DIRECTOR_SORTED_BY_LIKES_SQL, directorId);
+        } else {
+            // По умолчанию сортируем по году
+            return findMany(FIND_BY_DIRECTOR_SORTED_BY_YEAR_SQL, directorId);
+        }
+    }
+
 }

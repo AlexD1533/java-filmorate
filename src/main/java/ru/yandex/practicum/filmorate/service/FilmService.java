@@ -90,7 +90,7 @@ public class FilmService {
     }
 
     public List<FilmDto> getFilmsByDirector(long directorId, String sortBy) {
-        return filmStorage.getFilmsByDirector(directorId, sortBy).stream()
+        return filmStorage.findByDirectorIdSorted(directorId, sortBy).stream()
                 .map(this::updateCollections) // чтобы заполнить жанры, лайки, режиссёров
                 .map(filmMapper::mapToFilmDto)
                 .toList();
