@@ -10,7 +10,6 @@ import java.util.Set;
 
 public interface FilmStorage {
 
-
     Film create(Film film);
 
     Film update(Film film);
@@ -26,10 +25,13 @@ public interface FilmStorage {
     boolean validateId(long id);
 
     // ===== новые методы для режиссёров =====
+
     void saveDirectors(long filmId, Set<Long> directorIds);
 
     Set<Long> getDirectorsByFilm(long filmId);
 
     // ===== метод для получения фильмов по режиссёру =====
+
     List<Film> getFilmsByDirector(long directorId, String sortBy);
+
 }
