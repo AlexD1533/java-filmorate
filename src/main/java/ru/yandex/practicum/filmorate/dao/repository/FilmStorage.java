@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface FilmStorage {
 
@@ -23,16 +22,6 @@ public interface FilmStorage {
     List<Film> getPopularFilms(int count);
 
     boolean validateId(long id);
-
-    // ===== новые методы для режиссёров =====
-
-    void saveDirectors(long filmId, Set<Long> directorIds);
-
-    Set<Long> getDirectorsByFilm(long filmId);
-
-    // ===== метод для получения фильмов по режиссёру =====
-
-    List<Film> getFilmsByDirector(long directorId, String sortBy);
 
     List<Film> findByDirectorIdSorted(Long directorId, String sortBy);
 }

@@ -8,8 +8,6 @@ import ru.yandex.practicum.filmorate.dao.dto.director.NewDirectorRequest;
 import ru.yandex.practicum.filmorate.dao.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.dao.repository.DirectorStorage;
-import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,7 +28,7 @@ public class DirectorService {
 
     public DirectorDto update(DirectorDto director) {
         if (directorRepository.findById(director.getId()).isEmpty()) {
-            throw new NotFoundException("Режиссера с id "+ director.getId() + "не существует");
+            throw new NotFoundException("Режиссера с id " + director.getId() + "не существует");
         }
         Director directorUpdate = directorRepository.update(director);
         return directorMapper.mapToDirectorDto(directorUpdate);
@@ -52,7 +50,7 @@ public class DirectorService {
                 .orElseThrow(() -> new NotFoundException("Режиссёр с id=" + id + " не найден"));
     }
 
-    public Set<Long> getDirectorsIdsByFilm (long id) {
+    public Set<Long> getDirectorsIdsByFilm(long id) {
         List<Director> directors = directorRepository.findDirectorsByFilmId(id);
         Set<Long> result = new HashSet<>();
         for (Director d : directors) {

@@ -73,7 +73,6 @@ public class FilmController {
         return popularFilms;
     }
 
-    // ===== Новый эндпоинт для фильмов режиссёра =====
     @GetMapping("/director/{directorId}")
     public List<FilmDto> getFilmsByDirector(
             @PathVariable long directorId,

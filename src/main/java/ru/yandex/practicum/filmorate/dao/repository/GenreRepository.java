@@ -10,7 +10,6 @@ import java.util.*;
 @Repository
 public class GenreRepository extends BaseRepository<Genre> {
 
-    // SQL константы
     private static final String FIND_ALL_BY_ID_SQL = "SELECT g.genre_id, g.name FROM genre AS g JOIN film_genre AS fg ON g.genre_id = fg.genre_id  WHERE fg.film_id = ?";
     private static final String FIND_ALL_SQL = "SELECT * FROM genre ORDER BY genre_id";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM genre WHERE genre_id = ?";

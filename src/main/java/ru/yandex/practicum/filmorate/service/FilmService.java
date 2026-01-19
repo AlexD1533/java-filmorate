@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
 
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +33,6 @@ public class FilmService {
         Film film = filmMapper.mapToFilm(request);
         film = filmStorage.create(film);
 
-        // Сохраняем жанры
         Set<Long> genres = request.getGenres();
         film.setGenres(genres);
         genreService.saveByFilm(film.getId(), genres);
@@ -52,7 +50,6 @@ public class FilmService {
         Film updatedFilm = filmMapper.updateFilmFields(existingFilm, request);
         updatedFilm = filmStorage.update(updatedFilm);
 
-        // Сохраняем жанры
         Set<Long> genres = request.getGenres();
         updatedFilm.setGenres(genres);
         genreService.saveByFilm(updatedFilm.getId(), genres);

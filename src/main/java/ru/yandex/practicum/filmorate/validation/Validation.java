@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.dao.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.repository.UserStorage;
-import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.Set;
 
@@ -42,19 +41,20 @@ public class Validation {
             throw new NotFoundException("Фильм с id=" + filmId + " не найден");
         }
     }
-        public void validateDirectorsSetExists(Set<Long> directors) {
-            for (Long d : directors) {
-                if (directorRepository.findById(d).isEmpty()) {
-                    throw new NotFoundException("Режиссер с id=" + d + " не найден");
-                }
+
+    public void validateDirectorsSetExists(Set<Long> directors) {
+        for (Long d : directors) {
+            if (directorRepository.findById(d).isEmpty()) {
+                throw new NotFoundException("Режиссер с id=" + d + " не найден");
             }
         }
+    }
 
 
-            public void validateDirectorExists(long directorId) {
-                    if (directorRepository.findById(directorId).isEmpty()) {
-                        throw new NotFoundException("Режиссер с id=" + directorId + " не найден");
-                }
+    public void validateDirectorExists(long directorId) {
+        if (directorRepository.findById(directorId).isEmpty()) {
+            throw new NotFoundException("Режиссер с id=" + directorId + " не найден");
+        }
     }
 }
 
