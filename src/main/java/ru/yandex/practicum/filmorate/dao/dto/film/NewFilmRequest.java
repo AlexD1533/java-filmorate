@@ -51,7 +51,9 @@ public class NewFilmRequest {
 
     @JsonSetter("mpa")
     public void setMpaToLong(MpaRating mpa) {
-        if (mpa != null) this.mpa = mpa.getId();
+        if (mpa != null) {
+            this.mpa = mpa.getId();
+        }
     }
 
     @JsonSetter("directors")
