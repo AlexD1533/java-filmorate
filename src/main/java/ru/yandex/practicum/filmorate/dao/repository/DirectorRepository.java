@@ -5,13 +5,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.dto.director.DirectorDto;
+import ru.yandex.practicum.filmorate.dao.dto.director.NewDirectorRequest;
 import ru.yandex.practicum.filmorate.dao.repository.mappers.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class DirectorRepository extends BaseRepository<Director> {
@@ -51,6 +54,9 @@ public class DirectorRepository extends BaseRepository<Director> {
     private static final String FILM_DIRECTOR_EXISTS_SQL =
             "SELECT COUNT(*) FROM film_directors WHERE film_id = ? AND director_id = ?";
 
+    private static final String FIND_DIRECTORS_IDS_BY_FILM_SQL =
+            "SELECT director_id FROM film_directors WHERE film_id = ?";
+
     public DirectorRepository(JdbcTemplate jdbc, DirectorRowMapper mapper) {
         super(jdbc, mapper);
     }
@@ -73,7 +79,7 @@ public class DirectorRepository extends BaseRepository<Director> {
         return director;
     }
 
-    public Director create(DirectorDto director) {
+    public Director create(NewDirectorRequest director) {
         Long id = insert(INSERT_DIRECTOR_SQL, director.getName());
         return new Director(id, director.getName());
     }
@@ -110,12 +116,10 @@ public class DirectorRepository extends BaseRepository<Director> {
         }
     }
 
-    public void addDirectorsToFilm(Long filmId, List<Long> directorIds) {
+    public void addDirectorsToFilm(Long filmId, Set<Long> directorIds) {
         if (directorIds != null && !directorIds.isEmpty()) {
-            // Удаляем старые связи
             deleteDirectorsFromFilm(filmId);
 
-            // Добавляем новые связи
             for (Long directorId : directorIds) {
                 if (exists(directorId)) {
                     addDirectorToFilm(filmId, directorId);
@@ -154,5 +158,7 @@ public class DirectorRepository extends BaseRepository<Director> {
         Integer count = jdbc.queryForObject(FILM_DIRECTOR_EXISTS_SQL, Integer.class, filmId, directorId);
         return count != null && count > 0;
     }
+
+
 
     }

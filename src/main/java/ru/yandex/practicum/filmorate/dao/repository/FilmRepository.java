@@ -30,23 +30,25 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "FETCH FIRST ? ROWS ONLY";
 
     private static final String FIND_BY_DIRECTOR_SORTED_BY_YEAR_SQL =
-            "SELECT f.*, m.name as mpa_name " +
+            "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, " +
+                    "m.name AS mpa_name " +
                     "FROM films f " +
-                    "LEFT JOIN mpa_ratings m ON f.mpa_id = m.mpa_id " +
-                    "WHERE f.film_id IN (SELECT film_id FROM film_directors WHERE director_id = ?) " +
+                    "JOIN film_directors fd ON f.film_id = fd.film_id " +
+                    "LEFT JOIN mpa_rating m ON f.rating_id = m.rating_id " + // Исправлено на mpa_rating и rating_id
+                    "WHERE fd.director_id = ? " +
                     "ORDER BY f.release_date";
 
     private static final String FIND_BY_DIRECTOR_SORTED_BY_LIKES_SQL =
-            "SELECT f.*, m.name as mpa_name, " +
-                    "COUNT(DISTINCT l.user_id) as likes_count " +
+            "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, " +
+                    "m.name AS mpa_name, " +
+                    "COUNT(l.user_id) AS likes_count " +
                     "FROM films f " +
-                    "LEFT JOIN mpa_ratings m ON f.mpa_id = m.mpa_id " +
+                    "JOIN film_directors fd ON f.film_id = fd.film_id " +
+                    "LEFT JOIN mpa_rating m ON f.rating_id = m.rating_id " +
                     "LEFT JOIN likes l ON f.film_id = l.film_id " +
-                    "WHERE f.film_id IN (SELECT film_id FROM film_directors WHERE director_id = ?) " +
-                    "GROUP BY f.film_id, m.name " +
+                    "WHERE fd.director_id = ? " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, m.name " +
                     "ORDER BY likes_count DESC";
-
-
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -108,7 +110,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     }
 
     public void saveDirectors(long filmId, Set<Long> directorIds) {
-        update(DELETE_FILM_DIRECTORS, filmId); // Удаляем старые
+        update(DELETE_FILM_DIRECTORS, filmId);
         if (directorIds != null) {
             for (Long directorId : directorIds) {
                 update(INSERT_FILM_DIRECTORS, filmId, directorId);

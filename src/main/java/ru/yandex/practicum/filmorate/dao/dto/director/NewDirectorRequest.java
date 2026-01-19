@@ -4,13 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
+import org.springframework.stereotype.Component;
+
 
 @Data
-public class DirectorDto {
-    @NotNull(message = "ID режиссёра не может быть null")
-    @Positive(message = "ID режиссёра должен быть положительным")
-    private Long id;
+public class NewDirectorRequest {
 
     @NotBlank(message = "Имя режиссёра не может быть пустым")
     private String name;
 }
+
+

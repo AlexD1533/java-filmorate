@@ -26,7 +26,6 @@ public class UpdateFilmRequest {
     private String description;
 
     @NotNull(message = "Дата выпуска обязательна")
-    @PastOrPresent(message = "Дата выпуска не может быть в будущем")
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность должна быть положительной")

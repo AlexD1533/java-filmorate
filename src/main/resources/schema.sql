@@ -103,8 +103,7 @@ CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_likes_film ON likes(film_id);
 CREATE INDEX IF NOT EXISTS idx_friends_user ON friends(user_id);
 CREATE INDEX IF NOT EXISTS idx_friends_friend ON friends(friend_id);
-CREATE INDEX idx_film_directors_film ON film_directors(film_id);
-CREATE INDEX idx_film_directors_director ON film_directors(director_id);
+
 
 -- Вставка предопределенных данных для MPA рейтингов
 MERGE INTO mpa_rating (rating_id, name) VALUES

@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.dao.repository.mappers;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+@Component
 public class DirectorRowMapper implements RowMapper<Director> {
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolationException;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +81,7 @@ public class ErrorHandler {
     public ErrorResponse handleThrowable(final Throwable e) {
         return new ErrorResponse(
                 "Произошла непредвиденная ошибка: " + e.getMessage(),
-                "Попробуйте повторить запрос позже"
+                "Попробуйте повторить запрос позже" + Arrays.toString(e.getStackTrace())
         );
     }
 }
