@@ -71,4 +71,16 @@ public class FilmController {
         log.info("Найдено {} популярных фильмов", popularFilms.size());
         return popularFilms;
     }
+
+    // ===== Новый эндпоинт для фильмов режиссёра =====
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getFilmsByDirector(
+            @PathVariable long directorId,
+            @RequestParam(defaultValue = "likes") String sortBy
+    ) {
+        log.info("Фильм: запрос на получение фильмов режиссёра id={} с сортировкой по {}", directorId, sortBy);
+        List<FilmDto> films = filmService.getFilmsByDirector(directorId, sortBy);
+        log.info("Найдено {} фильмов режиссёра id={}", films.size(), directorId);
+        return films;
+    }
 }

@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.dao.dto.film;
-
 import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.MpaRating;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,27 +33,36 @@ public class NewFilmRequest {
     private Integer duration;
 
     @NotNull(message = "Рейтинг MPA обязателен")
-
     @Valid
     private Long mpa;
 
     private Set<Long> genres = new HashSet<>();
+    private Set<Long> directors = new HashSet<>(); // <- добавлено поле
 
     @JsonSetter("genres")
     public void setGenresFromMaps(Set<Map<String, Long>> genreMaps) {
         if (genreMaps != null) {
             this.genres = genreMaps.stream()
                     .map(map -> map.get("id"))
-                    .filter(id -> id != null)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         }
-
     }
 
     @JsonSetter("mpa")
     public void setMpaToLong(MpaRating mpa) {
         if (mpa != null) {
             this.mpa = mpa.getId();
+        }
+    }
+
+    @JsonSetter("directors")
+    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps) {
+        if (directorMaps != null) {
+            this.directors = directorMaps.stream()
+                    .map(map -> map.get("id"))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
         }
     }
 }
