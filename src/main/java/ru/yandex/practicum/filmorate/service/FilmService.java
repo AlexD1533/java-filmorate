@@ -104,6 +104,7 @@ public class FilmService {
                 .map(filmMapper::mapToFilmDto)
                 .toList();
     }
+
     public Map<Long, Collection<Film>> getLikedFilmsByAllUsers() {
         List<Long> allUsersIds = userRepository.getAll().stream()
                 .map(User::getId)
