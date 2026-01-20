@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dao.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.List;
 
@@ -16,9 +17,12 @@ import java.util.List;
 public class FeedController {
 
     private final EventService eventService;
+    private final Validation validation;
+
 
     @GetMapping
     public List<EventDto> getUserFeed(@PathVariable long userId) {
+        validation.validateUserExists(userId);
         return eventService.getUserFeed(userId);
     }
 }

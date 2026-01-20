@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.dao.dto.event.EventMapper;
 import ru.yandex.practicum.filmorate.dao.repository.EventRepository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.enums.EventOperation;
 import ru.yandex.practicum.filmorate.model.enums.EventType;
@@ -36,6 +37,7 @@ public class EventService {
     }
 
     public List<EventDto> getUserFeed(long userId) {
+
         return eventRepository.getUserFeed(userId).stream()
                 .map(eventMapper::toDto)
                 .toList();
