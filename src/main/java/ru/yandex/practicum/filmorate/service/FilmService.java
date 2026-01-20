@@ -24,11 +24,13 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final LikeService likeService;
-    private final UserRepository userRepository;
+
+
     private final FilmMapper filmMapper;
     private final DirectorRepository directorRepository;
     private final DirectorService directorService;
     private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     public FilmDto create(NewFilmRequest request) {
 
@@ -73,8 +75,9 @@ public class FilmService {
         return filmMapper.mapToFilmDto(updateCollections(film));
     }
 
-    public List<FilmDto> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count).stream()
+
+    public List<FilmDto> getPopularFilms(Integer genreId, Integer year, int count) {
+        return filmStorage.getPopularFilms(genreId, year, count).stream()
                 .map(this::updateCollections)
                 .map(filmMapper::mapToFilmDto)
                 .toList();

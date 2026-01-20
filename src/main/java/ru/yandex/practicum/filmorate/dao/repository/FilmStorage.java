@@ -19,7 +19,7 @@ public interface FilmStorage {
 
     Optional<Film> findByNameAndReleaseDate(String name, LocalDate releaseDate);
 
-    List<Film> getPopularFilms(int count);
+    List<Film> getPopularFilms(Integer genreId, Integer year, int count);
 
     boolean validateId(long id);
 

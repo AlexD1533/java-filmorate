@@ -21,6 +21,18 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
             "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE film_id = ?";
+    private static final String FIND_POPULAR_FILMS_WITH_FILTERS_SQL =
+            """
+            SELECT f.*
+            FROM films f
+            LEFT JOIN likes l ON f.film_id = l.film_id
+            LEFT JOIN film_genre fg ON f.film_id = fg.film_id
+            WHERE (? IS NULL OR fg.genre_id = ?)
+              AND (? IS NULL OR EXTRACT(YEAR FROM f.release_date) = ?)
+            GROUP BY f.film_id
+            ORDER BY COUNT(l.user_id) DESC, f.film_id
+            FETCH FIRST ? ROWS ONLY
+            """;
     private static final String FIND_TOP_POPULAR_FILMS_SQL =
             "SELECT f.*, COUNT(l.user_id) AS likes_count " +
                     "FROM films f " +
@@ -105,8 +117,13 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
-        return findMany(FIND_TOP_POPULAR_FILMS_SQL, count);
+    public List<Film> getPopularFilms(Integer genreId, Integer year, int count) {
+        return findMany(
+                FIND_POPULAR_FILMS_WITH_FILTERS_SQL,
+                genreId, genreId,
+                year, year,
+                count
+        );
     }
 
     @Override
