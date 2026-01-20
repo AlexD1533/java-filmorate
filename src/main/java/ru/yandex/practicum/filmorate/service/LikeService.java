@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.like.LikeDto;
 import ru.yandex.practicum.filmorate.dao.dto.like.LikeMapper;
 import ru.yandex.practicum.filmorate.dao.repository.LikeRepository;
-import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.enums.EventOperation;

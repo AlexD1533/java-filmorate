@@ -15,6 +15,7 @@ public class EventRepository extends BaseRepository<Event> {
             "INSERT INTO events (timestamp, user_id, event_type, operation, entity_id) VALUES (?, ?, ?, ?, ?)";
     private static final String FIND_USER_FEED_SQL =
             "SELECT e.* FROM events e WHERE e.user_id = ? ORDER BY e.timestamp ASC";
+
     public EventRepository(JdbcTemplate jdbc, EventRowMapper mapper) {
         super(jdbc, mapper);
         this.jdbcTemplate = jdbc;

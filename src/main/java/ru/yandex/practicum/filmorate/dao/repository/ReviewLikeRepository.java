@@ -103,6 +103,7 @@ public class ReviewLikeRepository extends BaseRepository<ReviewLike> {
         String sql = "UPDATE reviews SET useful = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, useful, reviewId);
     }
+
     public Set<Long> findAllReviewLikes(Long reviewId) {
         List<Long> likesIds = jdbcTemplate.queryForList(FIND_BY_USER_ID_SQL, Long.class, reviewId);
         return new HashSet<>(likesIds);

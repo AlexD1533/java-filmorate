@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.dao.dto.friend;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
