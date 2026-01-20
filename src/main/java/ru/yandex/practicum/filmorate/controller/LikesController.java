@@ -27,7 +27,7 @@ public class LikesController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void removeLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Фильм: запрос на удаление лайка с фильма {} от пользователя {}", id, userId);
         likeService.removeLike(id, userId);
