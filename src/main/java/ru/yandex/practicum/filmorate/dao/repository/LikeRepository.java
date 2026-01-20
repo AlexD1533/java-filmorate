@@ -37,7 +37,6 @@ public class LikeRepository extends BaseRepository<Like> {
         return new HashSet<>(userIds);
     }
 
-
     public Like save(Like like) {
         jdbcTemplate.update(INSERT_SQL, like.getFilmId(), like.getUserId());
         return like;

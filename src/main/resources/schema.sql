@@ -80,6 +80,15 @@ CREATE TABLE IF NOT EXISTS review_likes (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS events (
+    event_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    timestamp BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    event_type VARCHAR(20) NOT NULL,
+    operation VARCHAR(20) NOT NULL,
+    entity_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 -- Таблица режиссёров
 CREATE TABLE IF NOT EXISTS directors (
      director_id INTEGER AUTO_INCREMENT PRIMARY KEY,
@@ -103,7 +112,8 @@ CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_likes_film ON likes(film_id);
 CREATE INDEX IF NOT EXISTS idx_friends_user ON friends(user_id);
 CREATE INDEX IF NOT EXISTS idx_friends_friend ON friends(friend_id);
-
+CREATE INDEX IF NOT EXISTS idx_events_user ON events(user_id);
+CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);
 
 -- Вставка предопределенных данных для MPA рейтингов
 MERGE INTO mpa_rating (rating_id, name) VALUES
