@@ -89,4 +89,14 @@ public class FilmController {
         log.info("Найдено {} фильмов режиссёра id={}", films.size(), directorId);
         return films;
     }
+
+    @GetMapping("/common")
+    public List<FilmDto> getCommonFilms(
+            @RequestParam long userId,
+            @RequestParam long friendId) {
+        log.info("Запрос общих фильмов {} и {}", userId, friendId);
+        List<FilmDto> commonFilms = filmService.getCommonFilms(userId, friendId);
+        log.info("Найдено {} общих фильмов", commonFilms.size());
+        return commonFilms;
+    }
 }
