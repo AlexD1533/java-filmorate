@@ -180,6 +180,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         return delete(DELETE_FILM_SQL,id);
     }
 
+
     @Override
     public List<Film> searchFilms(String query, Set<String> searchBy) {
         String searchPattern = "%" + query.toLowerCase() + "%";
@@ -197,6 +198,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         }
         return sortFilmsByPopularity(films);
     }
+
 
     private List<Film> sortFilmsByPopularity(List<Film> films) {
         if (films.isEmpty()) {
