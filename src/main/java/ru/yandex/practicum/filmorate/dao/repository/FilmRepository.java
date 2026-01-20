@@ -20,16 +20,16 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE film_id = ?";
     private static final String FIND_POPULAR_FILMS_WITH_FILTERS_SQL =
             """
-            SELECT f.*
-            FROM films f
-            LEFT JOIN likes l ON f.film_id = l.film_id
-            LEFT JOIN film_genre fg ON f.film_id = fg.film_id
-            WHERE (? IS NULL OR fg.genre_id = ?)
-              AND (? IS NULL OR EXTRACT(YEAR FROM f.release_date) = ?)
-            GROUP BY f.film_id
-            ORDER BY COUNT(l.user_id) DESC, f.film_id
-            FETCH FIRST ? ROWS ONLY
-            """;
+                    SELECT f.*
+                    FROM films f
+                    LEFT JOIN likes l ON f.film_id = l.film_id
+                    LEFT JOIN film_genre fg ON f.film_id = fg.film_id
+                    WHERE (? IS NULL OR fg.genre_id = ?)
+                      AND (? IS NULL OR EXTRACT(YEAR FROM f.release_date) = ?)
+                    GROUP BY f.film_id
+                    ORDER BY COUNT(l.user_id) DESC, f.film_id
+                    FETCH FIRST ? ROWS ONLY
+                    """;
     private static final String FIND_TOP_POPULAR_FILMS_SQL =
             "SELECT f.*, COUNT(l.user_id) AS likes_count " +
                     "FROM films f " +
@@ -164,24 +164,25 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     public Collection<Film> getLikedFilmsByUserId(long userId) {
         return findMany(FIND_ALL_LIKED_FILMS, userId);
     }
+
     public List<Film> getCommonFilms(long userId, long friendId) {
         String sql =
                 "SELECT f.* FROM films f " +
-                "INNER JOIN likes l1 ON f.film_id = l1.film_id AND l1.user_id = ? " +
-                "INNER JOIN likes l2 ON f.film_id = l2.film_id AND l2.user_id = ? " +
-                "LEFT JOIN likes l_count ON f.film_id = l_count.film_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l_count.user_id) DESC";
+                        "INNER JOIN likes l1 ON f.film_id = l1.film_id AND l1.user_id = ? " +
+                        "INNER JOIN likes l2 ON f.film_id = l2.film_id AND l2.user_id = ? " +
+                        "LEFT JOIN likes l_count ON f.film_id = l_count.film_id " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY COUNT(l_count.user_id) DESC";
 
         return findMany(sql, userId, friendId);
     }
+
     @Override
     public boolean deleteFilm(long id) {
-        return delete(DELETE_FILM_SQL,id);
+        return delete(DELETE_FILM_SQL, id);
     }
 
 
-    
     @Override
     public List<Film> searchFilms(String query, Set<String> searchBy) {
         String searchPattern = "%" + query.toLowerCase() + "%";
@@ -199,7 +200,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         }
         return sortFilmsByPopularity(films);
     }
-
 
 
     private List<Film> sortFilmsByPopularity(List<Film> films) {
