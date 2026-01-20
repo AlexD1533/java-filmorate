@@ -33,7 +33,12 @@ public class LikeService {
         Set<Long> userLikes = likeRepository.findUserIdsByFilmId(filmId);
         if (userLikes.contains(userId)) {
             Like like = new Like(filmId, userId);
-
+            eventService.addEvent(
+                    userId,
+                    EventType.LIKE,
+                    EventOperation.ADD,
+                    filmId
+            );
             return LikeMapper.mapToLikeDto(like);
         }
 

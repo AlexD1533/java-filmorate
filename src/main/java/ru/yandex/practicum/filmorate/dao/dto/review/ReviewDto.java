@@ -21,4 +21,5 @@ public class ReviewDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long useful;
 
+
 }

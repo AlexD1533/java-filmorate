@@ -56,13 +56,6 @@ public class ReviewLikeService {
 
     public void addLike(Long reviewId, Long userId) {
         addReaction(reviewId, userId, true);
-
-        eventService.addEvent(
-                userId,
-                EventType.LIKE,
-                EventOperation.ADD,
-                reviewId
-        );
     }
 
     public void addDislike(Long reviewId, Long userId) {

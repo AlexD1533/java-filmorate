@@ -60,6 +60,9 @@ public class FilmService {
         updatedFilm.setGenres(genres);
         genreService.saveByFilm(updatedFilm.getId(), genres);
 
+        Set<Long> likes = likeService.getLikesIdsByFilm(request.getId());
+        updatedFilm.setLikes(likes);
+
         Set<Long> directors = request.getDirectors();
         updatedFilm.setDirectors(directors);
         directorRepository.addDirectorsToFilm(request.getId(), directors);

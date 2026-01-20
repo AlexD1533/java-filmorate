@@ -6,7 +6,10 @@ import ru.yandex.practicum.filmorate.dao.repository.mappers.ReviewLikeRowMapper;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.ReviewLike;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class ReviewLikeRepository extends BaseRepository<ReviewLike> {
@@ -26,6 +29,7 @@ public class ReviewLikeRepository extends BaseRepository<ReviewLike> {
             "SELECT COUNT(*) FROM review_likes WHERE review_id = ? AND is_like = false";
     private static final String EXISTS_SQL =
             "SELECT COUNT(*) > 0 FROM review_likes WHERE review_id = ? AND user_id = ?";
+    private static final String FIND_BY_USER_ID_SQL = "SELECT * FROM review_likes WHERE review_id = ?";
 
     public ReviewLikeRepository(JdbcTemplate jdbc, ReviewLikeRowMapper mapper) {
         super(jdbc, mapper);
@@ -99,4 +103,9 @@ public class ReviewLikeRepository extends BaseRepository<ReviewLike> {
         String sql = "UPDATE reviews SET useful = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, useful, reviewId);
     }
+    public Set<Long> findAllReviewLikes(Long reviewId) {
+        List<Long> likesIds = jdbcTemplate.queryForList(FIND_BY_USER_ID_SQL, Long.class, reviewId);
+        return new HashSet<>(likesIds);
+    }
+
 }
