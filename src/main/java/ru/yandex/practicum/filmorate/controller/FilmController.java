@@ -99,4 +99,12 @@ public class FilmController {
         log.info("Найдено {} общих фильмов", commonFilms.size());
         return commonFilms;
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFilm(@PathVariable long id) {
+        log.info("Фильм: запрос на удаление id={}", id);
+        filmService.deleteFilm(id);
+        log.info("Фильм с id={} удалён", id);
+    }
 }

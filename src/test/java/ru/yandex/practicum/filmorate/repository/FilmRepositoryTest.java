@@ -221,4 +221,74 @@ class FilmRepositoryTest {
         assertThat(filmRepository.validateId(existingFilmId)).isTrue();
         assertThat(filmRepository.validateId(999L)).isFalse();
     }
+
+    @Test
+    void testDeleteFilm() {
+        // Arrange - получим ID существующего фильма
+        List<Film> allFilms = (List<Film>) filmRepository.getAll();
+        Long existingFilmId = allFilms.get(0).getId();
+
+        // Act
+        boolean isDeleted = filmRepository.deleteFilm(existingFilmId);
+
+        // Assert
+        assertThat(isDeleted).isTrue();
+
+        // Проверяем, что фильм действительно удален из БД
+        Optional<Film> retrievedFilm = filmRepository.getById(existingFilmId);
+        assertThat(retrievedFilm).isEmpty();
+
+        // Проверяем, что остальные фильмы остались
+        Collection<Film> remainingFilms = filmRepository.getAll();
+        assertThat(remainingFilms).hasSize(2);
+    }
+
+    @Test
+    void testDeleteFilm_WhenNotFound() {
+        // Act
+        boolean isDeleted = filmRepository.deleteFilm(999L);
+
+        // Assert
+        assertThat(isDeleted).isFalse();
+    }
+
+    @Test
+    void testDeleteFilm_CascadeDeletesLikesAndGenres() {
+        // Arrange
+        // Создаем фильм
+        Film newFilm = new Film();
+        newFilm.setName("Cascade Test Film");
+        newFilm.setDescription("Test Description");
+        newFilm.setReleaseDate(LocalDate.of(2003, 1, 1));
+        newFilm.setDuration(150);
+        newFilm.setMpa(1L);
+        Film createdFilm = filmRepository.create(newFilm);
+        Long filmId = createdFilm.getId();
+
+        // Добавляем жанры к фильму
+        jdbcTemplate.update("INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)", filmId, 1);
+        jdbcTemplate.update("INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)", filmId, 2);
+
+        // Создаем пользователя и лайк
+        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES ('test@test.com', 'test', 'Test', '1990-01-01')");
+        Long userId = jdbcTemplate.queryForObject("SELECT user_id FROM users WHERE email = 'test@test.com'", Long.class);
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (?, ?)", filmId, userId);
+
+        // Act
+        boolean isDeleted = filmRepository.deleteFilm(filmId);
+
+        // Assert
+        assertThat(isDeleted).isTrue();
+
+        // Проверяем, что лайки удалены (CASCADE)
+        Integer likesCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE film_id = ?", Integer.class, filmId);
+        assertThat(likesCount).isZero();
+
+        // Проверяем, что связи с жанрами удалены (CASCADE)
+        Integer genresCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM film_genre WHERE film_id = ?", Integer.class, filmId);
+        assertThat(genresCount).isZero();
+    }
+
 }

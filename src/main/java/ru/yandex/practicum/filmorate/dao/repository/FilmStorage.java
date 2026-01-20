@@ -28,4 +28,6 @@ public interface FilmStorage {
     Collection<Film> getLikedFilmsByUserId(long userId);
 
     List<Film> getCommonFilms(long userId, long friendId);
+
+    boolean deleteFilm(long id);
 }

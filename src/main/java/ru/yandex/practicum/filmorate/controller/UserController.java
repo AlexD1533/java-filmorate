@@ -78,4 +78,12 @@ public class UserController {
         log.info("Фильм: запрос на получение всех рекомендаций");
         return recommendations;
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable long id) {
+        log.info("Пользователь: запрос на удаление id={}", id);
+        userService.deleteUser(id);
+        log.info("Пользователь с id={} удалён", id);
+    }
 }

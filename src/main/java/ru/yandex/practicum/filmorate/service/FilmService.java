@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.dao.repository.UserRepository;
 import ru.yandex.practicum.filmorate.dao.repository.UserStorage;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmMapper;
@@ -170,5 +171,13 @@ public class FilmService {
                 .map(this::updateCollections)
                 .map(filmMapper::mapToFilmDto)
                 .toList();
+    }
+
+    public void deleteFilm(long id) {
+        getById(id);
+        boolean deleted = filmStorage.deleteFilm(id);
+        if (!deleted) {
+            throw new InternalServerException("Не удалось удалить фильм с id=" + id);
+        }
     }
 }
