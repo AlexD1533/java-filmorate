@@ -6,10 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
+import java.util.*;
 
 @Component
 public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
@@ -23,16 +20,16 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE film_id = ?";
     private static final String FIND_POPULAR_FILMS_WITH_FILTERS_SQL =
             """
-            SELECT f.*
-            FROM films f
-            LEFT JOIN likes l ON f.film_id = l.film_id
-            LEFT JOIN film_genre fg ON f.film_id = fg.film_id
-            WHERE (? IS NULL OR fg.genre_id = ?)
-              AND (? IS NULL OR EXTRACT(YEAR FROM f.release_date) = ?)
-            GROUP BY f.film_id
-            ORDER BY COUNT(l.user_id) DESC, f.film_id
-            FETCH FIRST ? ROWS ONLY
-            """;
+                    SELECT f.*
+                    FROM films f
+                    LEFT JOIN likes l ON f.film_id = l.film_id
+                    LEFT JOIN film_genre fg ON f.film_id = fg.film_id
+                    WHERE (? IS NULL OR fg.genre_id = ?)
+                      AND (? IS NULL OR EXTRACT(YEAR FROM f.release_date) = ?)
+                    GROUP BY f.film_id
+                    ORDER BY COUNT(l.user_id) DESC, f.film_id
+                    FETCH FIRST ? ROWS ONLY
+                    """;
     private static final String FIND_TOP_POPULAR_FILMS_SQL =
             "SELECT f.*, COUNT(l.user_id) AS likes_count " +
                     "FROM films f " +
@@ -67,6 +64,25 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, m.name " +
                     "ORDER BY likes_count DESC";
     private static final String DELETE_FILM_SQL = "DELETE FROM films WHERE film_id = ?";
+
+    private static final String SEARCH_FILMS_BY_TITLE_SQL =
+            "SELECT f.* FROM films f " +
+                    "WHERE LOWER(f.name) LIKE LOWER(?) " +
+                    "ORDER BY (SELECT COUNT(*) FROM likes l WHERE l.film_id = f.film_id) DESC";
+
+    private static final String SEARCH_FILMS_BY_DIRECTOR_SQL =
+            "SELECT f.* FROM films f " +
+                    "JOIN film_directors fd ON f.film_id = fd.film_id " +
+                    "JOIN directors d ON fd.director_id = d.director_id " +
+                    "WHERE LOWER(d.name) LIKE LOWER(?) " +
+                    "ORDER BY (SELECT COUNT(*) FROM likes l WHERE l.film_id = f.film_id) DESC";
+
+    private static final String SEARCH_FILMS_BY_TITLE_AND_DIRECTOR_SQL =
+            "SELECT f.* FROM films f " +
+                    "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
+                    "LEFT JOIN directors d ON fd.director_id = d.director_id " +
+                    "WHERE LOWER(f.name) LIKE LOWER(?) OR LOWER(d.name) LIKE LOWER(?) " +
+                    "ORDER BY f.film_id";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -148,20 +164,61 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     public Collection<Film> getLikedFilmsByUserId(long userId) {
         return findMany(FIND_ALL_LIKED_FILMS, userId);
     }
+
     public List<Film> getCommonFilms(long userId, long friendId) {
         String sql =
                 "SELECT f.* FROM films f " +
-                "INNER JOIN likes l1 ON f.film_id = l1.film_id AND l1.user_id = ? " +
-                "INNER JOIN likes l2 ON f.film_id = l2.film_id AND l2.user_id = ? " +
-                "LEFT JOIN likes l_count ON f.film_id = l_count.film_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l_count.user_id) DESC";
+                        "INNER JOIN likes l1 ON f.film_id = l1.film_id AND l1.user_id = ? " +
+                        "INNER JOIN likes l2 ON f.film_id = l2.film_id AND l2.user_id = ? " +
+                        "LEFT JOIN likes l_count ON f.film_id = l_count.film_id " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY COUNT(l_count.user_id) DESC";
 
         return findMany(sql, userId, friendId);
     }
+
     @Override
     public boolean deleteFilm(long id) {
-        return delete(DELETE_FILM_SQL,id);
+        return delete(DELETE_FILM_SQL, id);
     }
 
+
+    @Override
+    public List<Film> searchFilms(String query, Set<String> searchBy) {
+        String searchPattern = "%" + query.toLowerCase() + "%";
+
+        List<Film> films;
+
+        if (searchBy.contains("title") && searchBy.contains("director")) {
+            films = findMany(SEARCH_FILMS_BY_TITLE_AND_DIRECTOR_SQL, searchPattern, searchPattern);
+        } else if (searchBy.contains("title")) {
+            films = findMany(SEARCH_FILMS_BY_TITLE_SQL, searchPattern);
+        } else if (searchBy.contains("director")) {
+            films = findMany(SEARCH_FILMS_BY_DIRECTOR_SQL, searchPattern);
+        } else {
+            films = findMany(SEARCH_FILMS_BY_TITLE_AND_DIRECTOR_SQL, searchPattern, searchPattern);
+        }
+        return sortFilmsByPopularity(films);
+    }
+
+
+    private List<Film> sortFilmsByPopularity(List<Film> films) {
+        if (films.isEmpty()) {
+            return films;
+        }
+
+        Map<Long, Integer> likesCount = new HashMap<>();
+        for (Film film : films) {
+            String sql = "SELECT COUNT(*) FROM likes WHERE film_id = ?";
+            Integer count = jdbc.queryForObject(sql, Integer.class, film.getId());
+            likesCount.put(film.getId(), count != null ? count : 0);
+        }
+
+        films.sort((f1, f2) -> {
+            int likes1 = likesCount.getOrDefault(f1.getId(), 0);
+            int likes2 = likesCount.getOrDefault(f2.getId(), 0);
+            return Integer.compare(likes2, likes1);
+        });
+        return films;
+    }
 }

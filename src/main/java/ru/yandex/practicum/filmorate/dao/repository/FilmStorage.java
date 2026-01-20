@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
 
@@ -30,4 +31,6 @@ public interface FilmStorage {
     List<Film> getCommonFilms(long userId, long friendId);
 
     boolean deleteFilm(long id);
+
+    List<Film> searchFilms(String query, Set<String> searchBy);
 }

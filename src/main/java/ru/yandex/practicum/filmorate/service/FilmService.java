@@ -6,15 +6,12 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dao.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dao.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dao.repository.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
-import ru.yandex.practicum.filmorate.dao.repository.UserRepository;
-import ru.yandex.practicum.filmorate.dao.repository.UserStorage;
 import ru.yandex.practicum.filmorate.dao.dto.film.FilmMapper;
-import ru.yandex.practicum.filmorate.dao.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validation.Validation;
 
@@ -27,8 +24,6 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final LikeService likeService;
-
-
     private final FilmMapper filmMapper;
     private final DirectorRepository directorRepository;
     private final DirectorService directorService;
@@ -40,9 +35,14 @@ public class FilmService {
 
         Film film = filmMapper.mapToFilm(request);
         film = filmStorage.create(film);
+
         Set<Long> genres = request.getGenres();
         film.setGenres(genres);
         genreService.saveByFilm(film.getId(), genres);
+
+        Set<Long> directors = request.getDirectors();
+        film.setDirectors(directors);
+        directorRepository.addDirectorsToFilm(film.getId(), directors);
 
         return filmMapper.mapToFilmDto(film);
     }
@@ -104,6 +104,7 @@ public class FilmService {
                 .map(filmMapper::mapToFilmDto)
                 .toList();
     }
+
     public Map<Long, Collection<Film>> getLikedFilmsByAllUsers() {
         List<Long> allUsersIds = userRepository.getAll().stream()
                 .map(User::getId)
@@ -179,5 +180,18 @@ public class FilmService {
         if (!deleted) {
             throw new InternalServerException("Не удалось удалить фильм с id=" + id);
         }
+    }
+
+    public List<FilmDto> searchFilms(String query, Set<String> searchBy) {
+        if (query == null || query.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        validation.validateSearchParameters(searchBy);
+        List<Film> films = filmStorage.searchFilms(query.trim(), searchBy);
+        return films.stream()
+                .map(this::updateCollections)
+                .map(filmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 }

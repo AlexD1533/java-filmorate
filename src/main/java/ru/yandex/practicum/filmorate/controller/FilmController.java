@@ -15,6 +15,9 @@ import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @RestController
@@ -106,5 +109,21 @@ public class FilmController {
         log.info("Фильм: запрос на удаление id={}", id);
         filmService.deleteFilm(id);
         log.info("Фильм с id={} удалён", id);
+    }
+
+    @GetMapping("/search")
+    public List<FilmDto> searchFilms(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "title,director") String by) {
+        log.info("Поиск фильмов по запросу: '{}', параметры поиска: {}", query, by);
+
+        Set<String> searchBy = Stream.of(by.split(","))
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        List<FilmDto> results = filmService.searchFilms(query, searchBy);
+        log.info("Найдено {} фильмов по запросу '{}'", results.size(), query);
+        return results;
     }
 }
