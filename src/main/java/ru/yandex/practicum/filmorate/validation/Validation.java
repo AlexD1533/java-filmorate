@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.dao.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.repository.UserStorage;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.util.Set;
 
@@ -56,6 +57,18 @@ public class Validation {
             throw new NotFoundException("Режиссер с id=" + directorId + " не найден");
         }
     }
+
+    public void validateSearchParameters(Set<String> searchBy) {
+        if (searchBy == null || searchBy.isEmpty()) {
+            throw new ValidationException("Параметр 'by' должен содержать значение: title, или director");
+        }
+
+        for (String param : searchBy) {
+            if (!param.equals("title") && !param.equals("director")) {
+                throw new ValidationException(
+                        "Недопустимое значение в параметре 'by': " + param + ". Допустимые значения: title, director"
+                );
+            }
+        }
+    }
 }
-
-
