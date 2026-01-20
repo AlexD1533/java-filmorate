@@ -37,6 +37,7 @@ public class UpdateFilmRequest {
     private Set<Long> genres = new HashSet<>();
     private Set<Long> directors = new HashSet<>();
 
+
     @JsonSetter("genres")
     public void setGenresFromMaps(Set<Map<String, Long>> genreMaps) {
         if (genreMaps != null) {

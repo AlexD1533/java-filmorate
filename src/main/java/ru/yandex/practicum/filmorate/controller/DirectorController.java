@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dao.dto.director.NewDirectorRequest;
 import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.Collection;
 
@@ -18,6 +19,7 @@ import java.util.Collection;
 public class DirectorController {
 
     private final DirectorService directorService;
+    private final Validation validation;
 
     @GetMapping
     public Collection<DirectorDto> getAll() {
@@ -38,12 +40,14 @@ public class DirectorController {
 
     @PutMapping
     public DirectorDto update(@Valid @RequestBody DirectorDto director) {
+        validation.validateDirectorExists(director.getId());
         return directorService.update(director);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
+        validation.validateDirectorExists(id);
         directorService.delete(id);
     }
 }

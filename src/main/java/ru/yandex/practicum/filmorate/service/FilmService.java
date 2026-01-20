@@ -24,6 +24,7 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final LikeService likeService;
+    private final LikeRepository likeRepository;
     private final FilmMapper filmMapper;
     private final DirectorRepository directorRepository;
     private final DirectorService directorService;
@@ -62,6 +63,8 @@ public class FilmService {
         Set<Long> directors = request.getDirectors();
         updatedFilm.setDirectors(directors);
         directorRepository.addDirectorsToFilm(request.getId(), directors);
+
+       // likeRepository.deleteLikesAllByFilmId(request.getId();
 
         return filmMapper.mapToFilmDto(updatedFilm);
     }

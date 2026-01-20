@@ -92,13 +92,13 @@ public class DirectorRepository extends BaseRepository<Director> {
     }
 
     public void addDirectorsToFilm(Long filmId, Set<Long> directorIds) {
-        if (directorIds != null && !directorIds.isEmpty()) {
-            deleteDirectorsFromFilm(filmId);
-
-            for (Long directorId : directorIds) {
-                if (exists(directorId)) {
-                    addDirectorToFilm(filmId, directorId);
-                }
+        deleteDirectorsFromFilm(filmId);
+        if (directorIds == null || directorIds.isEmpty()) {
+            return;
+        }
+        for (Long directorId : directorIds) {
+            if (exists(directorId)) {
+                addDirectorToFilm(filmId, directorId);
             }
         }
     }

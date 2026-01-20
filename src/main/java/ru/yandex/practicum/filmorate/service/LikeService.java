@@ -32,7 +32,9 @@ public class LikeService {
 
         Set<Long> userLikes = likeRepository.findUserIdsByFilmId(filmId);
         if (userLikes.contains(userId)) {
-            throw new DuplicatedDataException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
+            Like like = new Like(filmId, userId);
+
+            return LikeMapper.mapToLikeDto(like);
         }
 
         Like like = new Like(filmId, userId);
