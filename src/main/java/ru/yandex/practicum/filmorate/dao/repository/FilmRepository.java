@@ -6,13 +6,15 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 
 @Component
 public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
 
-     private static final String FIND_EXIST_BY_NAME_DATE_QUERY = "SELECT * FROM films WHERE name = ? AND release_date = ?";
+    private static final String FIND_EXIST_BY_NAME_DATE_QUERY = "SELECT * FROM films WHERE name = ? AND release_date = ?";
     private static final String FIND_ID_EXIST = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE film_id = ?";
@@ -26,6 +28,11 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "GROUP BY f.film_id, f.name " +
                     "ORDER BY COUNT(l.user_id) DESC, f.film_id " +
                     "FETCH FIRST ? ROWS ONLY";
+    private static final String FIND_ALL_LIKED_FILMS =
+            "SELECT f.* " +
+                    "FROM films f " +
+                    "JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE l.user_id = ?";
 
     private static final String FIND_BY_DIRECTOR_SORTED_BY_YEAR_SQL =
             "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, " +
@@ -119,4 +126,8 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         }
     }
 
+    @Override
+    public Collection<Film> getLikedFilmsByUserId(long userId) {
+        return findMany(FIND_ALL_LIKED_FILMS, userId);
+    }
 }

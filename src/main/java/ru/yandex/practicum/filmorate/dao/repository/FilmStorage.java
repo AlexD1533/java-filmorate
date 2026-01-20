@@ -24,4 +24,6 @@ public interface FilmStorage {
     boolean validateId(long id);
 
     List<Film> findByDirectorIdSorted(Long directorId, String sortBy);
+
+    Collection<Film> getLikedFilmsByUserId(long userId);
 }
