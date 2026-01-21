@@ -48,7 +48,7 @@ public class LikeRepository extends BaseRepository<Like> {
         return rowsDeleted > 0;
     }
 
-    public boolean deleteLikesAllByFilmId (Long filmId) {
+    public boolean deleteLikesAllByFilmId(Long filmId) {
         int rowsDeleted = jdbcTemplate.update(DELETE_ALL_BY_FILM_SQL, filmId);
         return rowsDeleted > 0;
     }
