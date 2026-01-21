@@ -29,7 +29,7 @@ public class ReviewLikeRepository extends BaseRepository<ReviewLike> {
             "SELECT COUNT(*) FROM review_likes WHERE review_id = ? AND is_like = false";
     private static final String EXISTS_SQL =
             "SELECT COUNT(*) > 0 FROM review_likes WHERE review_id = ? AND user_id = ?";
-    private static final String FIND_BY_USER_ID_SQL = "SELECT * FROM review_likes WHERE review_id = ?";
+    private static final String FIND_BY_USER_ID_SQL = "SELECT user_id FROM review_likes WHERE review_id = ?";
 
     public ReviewLikeRepository(JdbcTemplate jdbc, ReviewLikeRowMapper mapper) {
         super(jdbc, mapper);
@@ -105,8 +105,9 @@ public class ReviewLikeRepository extends BaseRepository<ReviewLike> {
     }
 
     public Set<Long> findAllReviewLikes(Long reviewId) {
-        List<Long> likesIds = jdbcTemplate.queryForList(FIND_BY_USER_ID_SQL, Long.class, reviewId);
-        return new HashSet<>(likesIds);
+        List<Long> userIds =
+                jdbcTemplate.queryForList(FIND_BY_USER_ID_SQL, Long.class, reviewId);
+        return new HashSet<>(userIds);
     }
 
 }
