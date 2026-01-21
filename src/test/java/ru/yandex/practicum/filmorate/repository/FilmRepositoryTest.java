@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -291,4 +292,148 @@ class FilmRepositoryTest {
         assertThat(genresCount).isZero();
     }
 
+    @Test
+    void searchFilms_byTitle_sortedByLikes() {
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (10, 'u1@mail.ru', 'user1', 'User One', '1990-01-01')"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (11, 'u2@mail.ru', 'user2', 'User Two', '1991-01-01')"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (12, 'u3@mail.ru', 'user3', 'User Three', '1992-01-01')"
+        );
+
+        // фильмы (ID далеко от базовых)
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration) " +
+                        "VALUES (100, 'Matrix', 'Desc', '1999-03-31', 136)"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration) " +
+                        "VALUES (101, 'Matrix Reloaded', 'Desc', '2003-05-15', 138)"
+        );
+
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (101, 10)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (101, 11)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (100, 12)");
+
+        List<Film> result = filmRepository.searchFilms("matrix", Set.of("title"));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(101); // больше лайков
+        assertThat(result.get(1).getId()).isEqualTo(100);
+    }
+
+    @Test
+    void searchFilms_byDirector() {
+        jdbcTemplate.update("INSERT INTO directors (director_id, name) VALUES (1, 'Nolan')");
+
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (1, 'Inception', 'Desc', '2010-01-01', 120, 1)"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO film_directors (film_id, director_id) VALUES (1, 1)"
+        );
+
+        List<Film> result = filmRepository.searchFilms("nolan", Set.of("director"));
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("Inception");
+    }
+
+    @Test
+    void searchFilms_byTitleAndDirector() {
+        jdbcTemplate.update("INSERT INTO directors (director_id, name) VALUES (1, 'Scott')");
+
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (1, 'Alien', 'Desc', '1979-01-01', 120, 1)"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (2, 'Blade Runner', 'Desc', '1982-01-01', 120, 1)"
+        );
+
+        jdbcTemplate.update("INSERT INTO film_directors (film_id, director_id) VALUES (1, 1)");
+        jdbcTemplate.update("INSERT INTO film_directors (film_id, director_id) VALUES (2, 1)");
+
+        List<Film> result = filmRepository.searchFilms("scott", Set.of("title", "director"));
+
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void searchFilms_withoutSearchBy_usesTitleAndDirector() {
+        jdbcTemplate.update("INSERT INTO directors (director_id, name) VALUES (1, 'Tarantino')");
+
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (1, 'Pulp Fiction', 'Desc', '1994-01-01', 120, 1)"
+        );
+
+        jdbcTemplate.update("INSERT INTO film_directors (film_id, director_id) VALUES (1, 1)");
+
+        List<Film> result = filmRepository.searchFilms("tarantino", Set.of());
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(1);
+    }
+
+    @Test
+    void searchFilms_whenNothingFound_returnsEmptyList() {
+        List<Film> result = filmRepository.searchFilms("unknown", Set.of("title"));
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getCommonFilms_sortedByTotalLikes() {
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (20, 'u20@mail.ru', 'user20', 'User 20', '1990-01-01')"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (21, 'u21@mail.ru', 'user21', 'User 21', '1991-01-01')"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (22, 'u22@mail.ru', 'user22', 'User 22', '1992-01-01')"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration) " +
+                        "VALUES (200, 'Film A', 'Desc', '2000-01-01', 100)"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration) " +
+                        "VALUES (201, 'Film B', 'Desc', '2001-01-01', 110)"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration) " +
+                        "VALUES (202, 'Film C', 'Desc', '2002-01-01', 120)"
+        );
+
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (200, 20)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (200, 21)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (200, 22)");
+
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (201, 20)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (201, 21)");
+
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (202, 20)");
+
+        List<Film> result = filmRepository.getCommonFilms(20, 21);
+
+        assertThat(result).hasSize(2);
+
+        assertThat(result.get(0).getId()).isEqualTo(200); // 3 лайка
+        assertThat(result.get(1).getId()).isEqualTo(201); // 2 лайка
+    }
 }
