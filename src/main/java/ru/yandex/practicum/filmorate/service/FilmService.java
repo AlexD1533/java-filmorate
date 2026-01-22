@@ -193,7 +193,6 @@ public class FilmService {
             return Collections.emptyList();
         }
 
-        validation.validateSearchParameters(searchBy);
         List<Film> films = filmStorage.searchFilms(query.trim(), searchBy);
         return films.stream()
                 .map(this::updateCollections)

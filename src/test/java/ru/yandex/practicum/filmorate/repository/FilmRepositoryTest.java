@@ -170,11 +170,11 @@ class FilmRepositoryTest {
 
         // users
         jdbcTemplate.update("""
-        INSERT INTO users (email, login, name, birthday)
-        VALUES
-        ('test@test.com', 'test', 'Test', '1990-01-01'),
-        ('test2@test.com', 'test2', 'Test2', '1990-01-01')
-    """);
+                    INSERT INTO users (email, login, name, birthday)
+                    VALUES
+                    ('test@test.com', 'test', 'Test', '1990-01-01'),
+                    ('test2@test.com', 'test2', 'Test2', '1990-01-01')
+                """);
 
         Long userId1 = jdbcTemplate.queryForObject(
                 "SELECT user_id FROM users WHERE login = 'test'", Long.class);
@@ -183,11 +183,11 @@ class FilmRepositoryTest {
 
         // films (MPA обязателен!)
         jdbcTemplate.update("""
-        INSERT INTO films (name, description, release_date, duration, rating_id)
-        VALUES
-        ('Film 1', 'Desc', '2000-01-01', 120, 1),
-        ('Film 2', 'Desc', '2001-01-01', 120, 1)
-    """);
+                    INSERT INTO films (name, description, release_date, duration, rating_id)
+                    VALUES
+                    ('Film 1', 'Desc', '2000-01-01', 120, 1),
+                    ('Film 2', 'Desc', '2001-01-01', 120, 1)
+                """);
 
         Long filmId1 = jdbcTemplate.queryForObject(
                 "SELECT film_id FROM films WHERE name = 'Film 1'", Long.class);
@@ -326,6 +326,54 @@ class FilmRepositoryTest {
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo(101); // больше лайков
         assertThat(result.get(1).getId()).isEqualTo(100);
+    }
+
+    @Test
+    void searchFilms_byDescription_sortedByLikes() {
+        // Arrange - создаем пользователей для лайков
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (20, 'u20@mail.ru', 'user20', 'User Twenty', '1990-01-01')"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (21, 'u21@mail.ru', 'user21', 'User Twenty-One', '1991-01-01')"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO users (user_id, email, login, name, birthday) " +
+                        "VALUES (22, 'u22@mail.ru', 'user22', 'User Twenty-Two', '1992-01-01')"
+        );
+
+        // Создаем фильмы с описаниями, содержащими искомое слово
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (100, 'Film A', 'A great adventure movie about matrix world', '2000-01-01', 120, 1)"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (101, 'Film B', 'Sci-fi film with matrix concept', '2001-01-01', 130, 1)"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO films (film_id, name, description, release_date, duration, rating_id) " +
+                        "VALUES (102, 'Film C', 'Another film without matrix in description', '2002-01-01', 140, 1)"
+        );
+
+        // Добавляем лайки (фильм 101 должен иметь больше лайков)
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (101, 20)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (101, 21)");
+        jdbcTemplate.update("INSERT INTO likes (film_id, user_id) VALUES (100, 22)");
+
+        // Act - ищем по описанию
+        List<Film> result = filmRepository.searchFilms("matrix", Set.of("description"));
+
+        // Assert
+        assertThat(result).hasSize(3);
+        assertThat(result.get(0).getId()).isEqualTo(101); // Больше лайков (2 vs 1)
+        assertThat(result.get(1).getId()).isEqualTo(100); // Меньше лайков
+
+        // Дополнительные проверки
+        assertThat(result).extracting(Film::getName)
+                .containsExactly("Film B", "Film A", "Film C");
     }
 
     @Test

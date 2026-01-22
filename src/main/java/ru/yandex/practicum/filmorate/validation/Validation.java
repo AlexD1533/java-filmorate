@@ -60,13 +60,13 @@ public class Validation {
 
     public void validateSearchParameters(Set<String> searchBy) {
         if (searchBy == null || searchBy.isEmpty()) {
-            throw new ValidationException("Параметр 'by' должен содержать значение: title, или director");
+            throw new ValidationException("Параметр 'by' должен содержать значение: title, director или description");
         }
 
         for (String param : searchBy) {
-            if (!param.equals("title") && !param.equals("director")) {
+            if (!param.equals("title") && !param.equals("director") && !param.equals("description")) {
                 throw new ValidationException(
-                        "Недопустимое значение в параметре 'by': " + param + ". Допустимые значения: title, director"
+                        "Недопустимое значение в параметре 'by': " + param + ". Допустимые значения: title, director, description"
                 );
             }
         }

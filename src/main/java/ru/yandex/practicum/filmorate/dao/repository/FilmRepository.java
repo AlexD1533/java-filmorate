@@ -70,6 +70,11 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     "WHERE LOWER(f.name) LIKE LOWER(?) " +
                     "ORDER BY (SELECT COUNT(*) FROM likes l WHERE l.film_id = f.film_id) DESC";
 
+    private static final String SEARCH_FILMS_BY_DESCRIPTION_SQL =
+            "SELECT f.* FROM films f " +
+                    "WHERE LOWER(f.description) LIKE LOWER(?) " +
+                    "ORDER BY (SELECT COUNT(*) FROM likes l WHERE l.film_id = f.film_id) DESC";
+
     private static final String SEARCH_FILMS_BY_DIRECTOR_SQL =
             "SELECT f.* FROM films f " +
                     "JOIN film_directors fd ON f.film_id = fd.film_id " +
@@ -193,6 +198,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             films = findMany(SEARCH_FILMS_BY_TITLE_AND_DIRECTOR_SQL, searchPattern, searchPattern);
         } else if (searchBy.contains("title")) {
             films = findMany(SEARCH_FILMS_BY_TITLE_SQL, searchPattern);
+
+        } else if (searchBy.contains("description")) {
+            films = findMany(SEARCH_FILMS_BY_DESCRIPTION_SQL, searchPattern);
+
         } else if (searchBy.contains("director")) {
             films = findMany(SEARCH_FILMS_BY_DIRECTOR_SQL, searchPattern);
         } else {

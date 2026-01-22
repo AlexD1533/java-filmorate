@@ -114,7 +114,7 @@ public class FilmController {
     @GetMapping("/search")
     public List<FilmDto> searchFilms(
             @RequestParam String query,
-            @RequestParam(defaultValue = "title,director") String by) {
+            @RequestParam(defaultValue = "title,director,description") String by) {
         log.info("Поиск фильмов по запросу: '{}', параметры поиска: {}", query, by);
 
         Set<String> searchBy = Stream.of(by.split(","))
@@ -122,6 +122,7 @@ public class FilmController {
                 .map(String::toLowerCase)
                 .collect(Collectors.toSet());
 
+        validation.validateSearchParameters(searchBy);
         List<FilmDto> results = filmService.searchFilms(query, searchBy);
         log.info("Найдено {} фильмов по запросу '{}'", results.size(), query);
         return results;

@@ -9,7 +9,6 @@ import java.util.List;
 
 
 @Data
-@EqualsAndHashCode(of = {"email"})
 
 public class User {
     private long id;
