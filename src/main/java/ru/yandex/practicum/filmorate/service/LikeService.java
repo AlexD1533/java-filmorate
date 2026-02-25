@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.dto.like.LikeDto;
 import ru.yandex.practicum.filmorate.dao.dto.like.LikeMapper;
 import ru.yandex.practicum.filmorate.dao.repository.LikeRepository;
-import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Like;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
 import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class LikeService {
     private final LikeRepository likeRepository;
     private final Validation validation;
+    private final EventService eventService;
 
     public LikeDto addLike(long filmId, long userId) {
         validation.validateFilmExists(filmId);
@@ -29,11 +31,25 @@ public class LikeService {
 
         Set<Long> userLikes = likeRepository.findUserIdsByFilmId(filmId);
         if (userLikes.contains(userId)) {
-            throw new DuplicatedDataException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
+            Like like = new Like(filmId, userId);
+            eventService.addEvent(
+                    userId,
+                    EventType.LIKE,
+                    EventOperation.ADD,
+                    filmId
+            );
+            return LikeMapper.mapToLikeDto(like);
         }
 
         Like like = new Like(filmId, userId);
         like = likeRepository.save(like);
+
+        eventService.addEvent(
+                userId,
+                EventType.LIKE,
+                EventOperation.ADD,
+                filmId
+        );
 
         log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
         return LikeMapper.mapToLikeDto(like);
@@ -48,6 +64,13 @@ public class LikeService {
         if (!deleted) {
             throw new NotFoundException("Лайк от пользователя " + userId + " фильму " + filmId + " не найден");
         }
+
+        eventService.addEvent(
+                userId,
+                EventType.LIKE,
+                EventOperation.REMOVE,
+                filmId
+        );
 
         log.info("Пользователь {} удалил лайк с фильма {}", userId, filmId);
     }

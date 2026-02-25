@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.validation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.dao.repository.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.repository.UserStorage;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import java.util.Set;
 public class Validation {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final DirectorRepository directorRepository;
 
     public void validationMpa(long mpaId) {
         if (mpaId > 5 || mpaId < 1) {
@@ -39,6 +42,33 @@ public class Validation {
             throw new NotFoundException("Фильм с id=" + filmId + " не найден");
         }
     }
+
+    public void validateDirectorsSetExists(Set<Long> directors) {
+        for (Long d : directors) {
+            if (directorRepository.findById(d).isEmpty()) {
+                throw new NotFoundException("Режиссер с id=" + d + " не найден");
+            }
+        }
+    }
+
+
+    public void validateDirectorExists(long directorId) {
+        if (directorRepository.findById(directorId).isEmpty()) {
+            throw new NotFoundException("Режиссер с id=" + directorId + " не найден");
+        }
+    }
+
+    public void validateSearchParameters(Set<String> searchBy) {
+        if (searchBy == null || searchBy.isEmpty()) {
+            throw new ValidationException("Параметр 'by' должен содержать значение: title, director или description");
+        }
+
+        for (String param : searchBy) {
+            if (!param.equals("title") && !param.equals("director") && !param.equals("description")) {
+                throw new ValidationException(
+                        "Недопустимое значение в параметре 'by': " + param + ". Допустимые значения: title, director, description"
+                );
+            }
+        }
+    }
 }
-
-

@@ -18,6 +18,7 @@ public class LikeRepository extends BaseRepository<Like> {
     private static final String FIND_USER_IDS_BY_FILM_ID_SQL = "SELECT user_id FROM likes WHERE film_id = ?";
     private static final String INSERT_SQL = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_BY_IDS_SQL = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+    private static final String DELETE_ALL_BY_FILM_SQL = "DELETE FROM likes WHERE film_id = ?";
 
     public LikeRepository(JdbcTemplate jdbc, LikeRowMapper mapper) {
         super(jdbc, mapper);
@@ -37,7 +38,6 @@ public class LikeRepository extends BaseRepository<Like> {
         return new HashSet<>(userIds);
     }
 
-
     public Like save(Like like) {
         jdbcTemplate.update(INSERT_SQL, like.getFilmId(), like.getUserId());
         return like;
@@ -45,6 +45,11 @@ public class LikeRepository extends BaseRepository<Like> {
 
     public boolean delete(Long filmId, Long userId) {
         int rowsDeleted = jdbcTemplate.update(DELETE_BY_IDS_SQL, filmId, userId);
+        return rowsDeleted > 0;
+    }
+
+    public boolean deleteLikesAllByFilmId(Long filmId) {
+        int rowsDeleted = jdbcTemplate.update(DELETE_ALL_BY_FILM_SQL, filmId);
         return rowsDeleted > 0;
     }
 

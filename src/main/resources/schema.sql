@@ -58,6 +58,52 @@ CREATE TABLE IF NOT EXISTS friends (
     FOREIGN KEY (friend_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+-- Создание таблицы рецензий (отзывов)
+CREATE TABLE IF NOT EXISTS reviews (
+    review_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    is_positive BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL,
+    film_id BIGINT NOT NULL,
+    useful INT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (film_id) REFERENCES films(film_id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS review_likes (
+    review_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    is_like BOOLEAN NOT NULL,
+    PRIMARY KEY (review_id, user_id),
+    FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    event_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    timestamp BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    event_type VARCHAR(20) NOT NULL,
+    operation VARCHAR(20) NOT NULL,
+    entity_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+-- Таблица режиссёров
+CREATE TABLE IF NOT EXISTS directors (
+     director_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL
+    );
+
+-- Связь фильмы ↔ режиссёры (многие ко многим)
+CREATE TABLE IF NOT EXISTS film_directors (
+      film_id INTEGER NOT NULL,
+      director_id INTEGER NOT NULL,
+      PRIMARY KEY (film_id, director_id),
+    FOREIGN KEY (film_id) REFERENCES films(film_id) ON DELETE CASCADE,
+    FOREIGN KEY (director_id) REFERENCES directors(director_id) ON DELETE CASCADE
+    );
+
 -- Создание индексов для оптимизации запросов
 CREATE INDEX IF NOT EXISTS idx_films_rating ON films(rating_id);
 CREATE INDEX IF NOT EXISTS idx_film_genre_film ON film_genre(film_id);
@@ -66,6 +112,8 @@ CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_likes_film ON likes(film_id);
 CREATE INDEX IF NOT EXISTS idx_friends_user ON friends(user_id);
 CREATE INDEX IF NOT EXISTS idx_friends_friend ON friends(friend_id);
+CREATE INDEX IF NOT EXISTS idx_events_user ON events(user_id);
+CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);
 
 -- Вставка предопределенных данных для MPA рейтингов
 MERGE INTO mpa_rating (rating_id, name) VALUES

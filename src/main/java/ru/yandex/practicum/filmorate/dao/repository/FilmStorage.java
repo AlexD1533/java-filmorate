@@ -6,9 +6,9 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
-
 
     Film create(Film film);
 
@@ -20,7 +20,17 @@ public interface FilmStorage {
 
     Optional<Film> findByNameAndReleaseDate(String name, LocalDate releaseDate);
 
-    List<Film> getPopularFilms(int count);
+    List<Film> getPopularFilms(Integer genreId, Integer year, int count);
 
     boolean validateId(long id);
+
+    List<Film> findByDirectorIdSorted(Long directorId, String sortBy);
+
+    Collection<Film> getLikedFilmsByUserId(long userId);
+
+    List<Film> getCommonFilms(long userId, long friendId);
+
+    boolean deleteFilm(long id);
+
+    List<Film> searchFilms(String query, Set<String> searchBy);
 }

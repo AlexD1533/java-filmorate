@@ -195,4 +195,62 @@ class UserRepositoryTest {
         assertThat(userRepository.validateId(userId)).isTrue();
         assertThat(userRepository.validateId(999L)).isFalse();
     }
+
+    @Test
+    void testDeleteUser() {
+        // Arrange - получим ID существующего пользователя
+        Long userId = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE email = 'user1@test.com'",
+                Long.class
+        );
+
+        // Act
+        boolean isDeleted = userRepository.deleteUser(userId);
+
+        // Assert
+        assertThat(isDeleted).isTrue();
+
+        // Проверяем, что пользователь действительно удален из БД
+        Optional<User> retrievedUser = userRepository.getById(userId);
+        assertThat(retrievedUser).isEmpty();
+
+        // Проверяем, что остальные пользователи остались
+        Collection<User> remainingUsers = userRepository.getAll();
+        assertThat(remainingUsers).hasSize(2);
+    }
+
+    @Test
+    void testDeleteUser_WhenNotFound() {
+        // Act
+        boolean isDeleted = userRepository.deleteUser(999L);
+
+        // Assert
+        assertThat(isDeleted).isFalse();
+    }
+
+    @Test
+    void testDeleteUser_CascadeDeletesFriends() {  // Убрал "LikesAnd" из названия
+        // Arrange
+        Long userId = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM users WHERE email = 'user1@test.com'",
+                Long.class
+        );
+
+        // Act
+        boolean isDeleted = userRepository.deleteUser(userId);
+
+        // Assert
+        assertThat(isDeleted).isTrue();
+
+        // Проверяем удаление пользователя
+        Optional<User> retrievedUser = userRepository.getById(userId);
+        assertThat(retrievedUser).isEmpty();
+
+        // Проверяем удаление друзей
+        Integer friendsCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM friends WHERE user_id = ? OR friend_id = ?",
+                Integer.class, userId, userId
+        );
+        assertThat(friendsCount).isZero();
+    }
 }

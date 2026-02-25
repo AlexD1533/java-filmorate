@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class UpdateFilmRequest {
+
     @NotNull(message = "ID фильма обязателен")
     @Positive(message = "ID должен быть положительным")
     private Long id;
@@ -25,7 +26,6 @@ public class UpdateFilmRequest {
     private String description;
 
     @NotNull(message = "Дата выпуска обязательна")
-    @PastOrPresent(message = "Дата выпуска не может быть в будущем")
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность должна быть положительной")
@@ -33,7 +33,10 @@ public class UpdateFilmRequest {
 
     @Valid
     private Long mpa;
+
     private Set<Long> genres = new HashSet<>();
+    private Set<Long> directors = new HashSet<>();
+
 
     @JsonSetter("genres")
     public void setGenresFromMaps(Set<Map<String, Long>> genreMaps) {
@@ -49,6 +52,16 @@ public class UpdateFilmRequest {
     public void setMpaToLong(MpaRating mpa) {
         if (mpa != null) {
             this.mpa = mpa.getId();
+        }
+    }
+
+    @JsonSetter("directors")
+    public void setDirectorsFromMaps(Set<Map<String, Long>> directorMaps) {
+        if (directorMaps != null) {
+            this.directors = directorMaps.stream()
+                    .map(map -> map.get("id"))
+                    .filter(id -> id != null)
+                    .collect(Collectors.toSet());
         }
     }
 
@@ -74,5 +87,9 @@ public class UpdateFilmRequest {
 
     public boolean hasGenres() {
         return genres != null && !genres.isEmpty();
+    }
+
+    public boolean hasDirectors() {
+        return directors != null && !directors.isEmpty();
     }
 }

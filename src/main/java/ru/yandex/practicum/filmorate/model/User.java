@@ -2,14 +2,12 @@ package ru.yandex.practicum.filmorate.model;
 
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.List;
 
 
 @Data
-@EqualsAndHashCode(of = {"email"})
 
 public class User {
     private long id;

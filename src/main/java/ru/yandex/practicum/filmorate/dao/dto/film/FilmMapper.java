@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.dao.dto.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.repository.DirectorRepository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
@@ -16,6 +18,7 @@ public final class FilmMapper {
 
     private final MpaService mpaService;
     private final GenreService genreService;
+    private final DirectorRepository directorRepository;
 
 
     public Film mapToFilm(NewFilmRequest request) {
@@ -40,9 +43,10 @@ public final class FilmMapper {
         dto.setMpa(mpaService.getMpaById(film.getMpa()));
 
         Set<Genre> genres = genreService.getGenresByFilmId(film.getId());
-
         dto.setGenres(genres);
 
+        Set<Director> directors = new HashSet<>(directorRepository.findDirectorsByFilmId(film.getId()));
+        dto.setDirectors(directors);
         dto.setLikes(film.getLikes());
         dto.setCreationDate(LocalDate.now());
         return dto;
@@ -67,6 +71,10 @@ public final class FilmMapper {
         if (request.hasGenres()) {
             film.setGenres(request.getGenres());
         }
+        if (request.hasDirectors()) {
+            film.setDirectors(request.getDirectors());
+        }
+
         return film;
     }
 }
